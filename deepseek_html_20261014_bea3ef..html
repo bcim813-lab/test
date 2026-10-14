@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPI Intelligence Portal — Unified (v22)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+:root{
+  --bg-page:#f5f7fb;--bg-card:#ffffff;--bg-sidebar:#ffffff;--bg-hover:#f0f4fe;--bg-input:#f8fafd;--bg-detail:#f8fafd;
+  --border-light:#e5e9f2;--border-medium:#cbd5e1;--text-primary:#0a1a35;--text-secondary:#475569;--text-muted:#8494a8;
+  --accent:#1e5eff;--accent-hover:#1550e0;--accent-soft:#e8efff;
+  --success:#0ea76e;--success-soft:#d9f6e8;--warning:#d97706;--warning-soft:#fef3c7;
+  --danger:#dc2626;--danger-soft:#fee2e2;--info:#2563eb;--info-soft:#dbeafe;
+  --purple:#7c3aed;--purple-soft:#ede9fe;
+  --qpp-color:#1e5eff;--qpp-soft:#e8efff;--nppes-color:#7c3aed;--nppes-soft:#ede9fe;
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.04);--shadow-md:0 2px 8px rgba(16,24,40,0.06);
+  --shadow-lg:0 12px 32px rgba(16,24,40,0.10);--shadow-xl:0 20px 50px rgba(16,24,40,0.15);
+  --radius-md:10px;--radius-lg:14px;--radius-sm:8px;
+  --transition:all 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"]{
+  --bg-page:#0b1220;--bg-card:#131c2e;--bg-sidebar:#131c2e;--bg-hover:#1e293b;--bg-input:#0b1220;--bg-detail:#0b1220;
+  --border-light:#1e293b;--border-medium:#334155;--text-primary:#f1f5f9;--text-secondary:#cbd5e1;--text-muted:#94a3b8;
+  --accent:#3b82f6;--accent-hover:#2563eb;--accent-soft:#1e3a5f;
+  --success:#34d399;--success-soft:#064e3b;--warning:#fbbf24;--warning-soft:#78350f;
+  --danger:#f87171;--danger-soft:#7f1d1d;--info:#60a5fa;--info-soft:#1e3a5f;
+  --purple:#a78bfa;--purple-soft:#3b1d7a;
+  --qpp-color:#3b82f6;--qpp-soft:#1e3a5f;--nppes-color:#a78bfa;--nppes-soft:#3b1d7a;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg-page);color:var(--text-primary);line-height:1.5;transition:background .3s,color .3s}
+.app{display:flex;height:100vh;width:100vw;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:250px;background:var(--bg-sidebar);border-right:1px solid var(--border-light);display:flex;flex-direction:column;padding:16px 12px;flex-shrink:0;overflow-y:auto;z-index:10}
+.sidebar.collapsed{width:68px;padding:16px 8px}
+.sidebar.collapsed .logo-text,.sidebar.collapsed .nav-item span:not(.badge),.sidebar.collapsed .nav-section-label,.sidebar.collapsed .sidebar-footer-text,.sidebar.collapsed .nav-item .badge,.sidebar.collapsed .collapse-btn{display:none}
+.sidebar.collapsed .nav-item{justify-content:center;padding:11px}
+.sidebar.collapsed .logo-area{justify-content:center}
+.logo-area{display:flex;align-items:center;gap:10px;padding:0 4px 16px 4px;border-bottom:1px solid var(--border-light);margin-bottom:12px}
+.logo-icon{background:linear-gradient(135deg,#1e5eff,#3b82f6);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;box-shadow:0 4px 12px rgba(30,94,255,.3);flex-shrink:0}
+.logo-text{font-weight:700;font-size:17px;letter-spacing:-.3px;white-space:nowrap}
+.logo-text span{color:var(--accent)}
+.collapse-btn{background:transparent;border:none;color:var(--text-muted);cursor:pointer;padding:4px 8px;border-radius:6px;font-size:14px;margin-left:auto}
+.collapse-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+.nav-section-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;padding:12px 10px 6px}
+.nav-menu{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;color:var(--text-secondary);font-size:13.5px;font-weight:500;transition:var(--transition);cursor:pointer;white-space:nowrap;position:relative}
+.nav-item i{width:18px;font-size:15px;color:var(--text-muted);text-align:center;flex-shrink:0}
+.nav-item.active{background:var(--accent-soft);color:var(--accent)}
+.nav-item.active i{color:var(--accent)}
+.nav-item:not(.active):hover{background:var(--bg-hover);color:var(--text-primary)}
+.nav-item .badge{margin-left:auto;background:var(--border-light);color:var(--text-secondary);font-size:10.5px;padding:2px 8px;border-radius:20px;font-weight:700}
+.nav-item .badge.accent{background:var(--accent);color:#fff}
+.nav-item .badge.success{background:var(--success);color:#fff}
+.nav-item .badge.danger{background:var(--danger);color:#fff}
+.nav-item .live-dot{position:absolute;left:6px;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sidebar-footer{border-top:1px solid var(--border-light);padding-top:12px;margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.theme-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--bg-page);padding:8px 12px;border-radius:20px;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
+.theme-toggle:hover{background:var(--bg-hover)}
+.toggle-switch{width:32px;height:18px;background:var(--border-medium);border-radius:20px;position:relative;transition:var(--transition);flex-shrink:0;margin-left:6px}
+.toggle-switch.on{background:var(--accent)}
+.toggle-switch::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:var(--transition)}
+.toggle-switch.on::after{left:16px}
+.status-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);padding:2px 4px}
+.status-row .dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:var(--bg-card);border-bottom:1px solid var(--border-light);padding:14px 24px;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;gap:16px;flex-wrap:wrap}
+.topbar-left h1{font-size:22px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
+.topbar-left .subhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--text-muted)}
+.chip-source{background:var(--bg-page);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;color:var(--text-secondary);display:inline-flex;align-items:center;gap:5px}
+.chip-source.live{background:var(--success-soft);color:var(--success)}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.icon-btn{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;position:relative}
+.icon-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+.icon-btn .notif-dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--danger);border:2px solid var(--bg-card)}
+.btn{border:none;background:transparent;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;cursor:pointer;transition:var(--transition);border:1px solid transparent;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn i{font-size:12px}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(30,94,255,.3)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-qpp{background:var(--qpp-color);color:#fff}
+.btn-nppes{background:var(--nppes-color);color:#fff}
+.btn-outline{background:var(--bg-card);border:1px solid var(--border-medium);color:var(--text-secondary)}
+.btn-outline:hover{background:var(--bg-hover);border-color:var(--accent);color:var(--accent)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;border:1px solid var(--border-light);cursor:pointer}
+.global-search-trigger{display:flex;align-items:center;gap:10px;background:var(--bg-page);border:1px solid var(--border-light);border-radius:20px;padding:7px 14px 7px 12px;font-size:12.5px;color:var(--text-muted);cursor:pointer;transition:var(--transition);min-width:220px}
+.global-search-trigger:hover{border-color:var(--accent);color:var(--accent)}
+.global-search-trigger .kbd-hint{margin-left:auto;background:var(--bg-card);border:1px solid var(--border-light);padding:2px 6px;border-radius:4px;font-size:10.5px;font-family:monospace;color:var(--text-muted)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:20px 24px 100px;background:var(--bg-page)}
+.view{display:none}
+.view.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* TILES */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}
+.tiles.grid-6{grid-template-columns:repeat(6,minmax(0,1fr))}
+.tile{background:var(--bg-card);border-radius:var(--radius-lg);padding:18px 20px;border:1px solid var(--border-light);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:var(--transition)}
+.tile:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.tile-left h4{font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:8px}
+.tile-left .value{font-size:26px;font-weight:700;line-height:1.1}
+.tile-left .sub{font-size:11.5px;color:var(--text-muted);margin-top:4px}
+.tile-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tile-icon.blue{background:var(--info-soft);color:var(--info)}
+.tile-icon.green{background:var(--success-soft);color:var(--success)}
+.tile-icon.orange{background:var(--warning-soft);color:var(--warning)}
+.tile-icon.red{background:var(--danger-soft);color:var(--danger)}
+.tile-icon.purple{background:var(--purple-soft);color:var(--purple)}
+.tile-icon.qpp{background:var(--qpp-soft);color:var(--qpp-color)}
+.tile-icon.nppes{background:var(--nppes-soft);color:var(--nppes-color)}
+
+/* CARDS */
+.section-card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-light);box-shadow:var(--shadow-sm);padding:20px;margin-bottom:16px}
+.section-card h3{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.section-card h3 i{color:var(--accent);font-size:14px}
+.section-card .subtitle{font-size:12.5px;color:var(--text-muted);margin-bottom:16px}
+
+/* BATCH TABS */
+.bm-tabs{display:flex;gap:8px;margin-bottom:20px;padding:6px;background:var(--bg-card);border-radius:14px;border:1px solid var(--border-light);box-shadow:var(--shadow-sm);width:fit-content;flex-wrap:wrap}
+.bm-tab{display:flex;align-items:center;gap:10px;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:var(--transition)}
+.bm-tab:hover{background:var(--bg-hover)}
+.bm-tab.active{color:#fff}
+.bm-tab.qpp.active{background:linear-gradient(135deg,var(--qpp-color),#4f7dff);box-shadow:0 4px 12px rgba(30,94,255,.3)}
+.bm-tab.nppes.active{background:linear-gradient(135deg,var(--nppes-color),#9b5cf6);box-shadow:0 4px 12px rgba(124,58,237,.3)}
+.bm-tab.all.active{background:linear-gradient(135deg,#1e293b,#334155)}
+.bm-tab .tab-count{background:rgba(255,255,255,.25);padding:2px 10px;border-radius:20px;font-size:12px;font-weight:800;min-width:28px;text-align:center}
+.bm-tab:not(.active) .tab-count{background:var(--bg-page);color:var(--text-muted)}
+
+/* TIME SCHEDULE */
+.time-schedule-card{background:var(--bg-card);border-radius:14px;border:1px solid var(--border-light);padding:20px;margin-bottom:20px}
+.time-schedule-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.time-schedule-header h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.time-schedule-header h3 i{color:var(--accent)}
+.time-schedule-sub{font-size:12px;color:var(--text-muted);margin-bottom:16px}
+.time-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-muted);margin-bottom:6px;padding:0 2px}
+.time-track{display:flex;height:28px;border-radius:6px;overflow:hidden;background:var(--bg-detail);border:1px solid var(--border-light)}
+.time-block{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;transition:var(--transition)}
+.time-block.qpp{background:var(--qpp-color)}
+.time-block.nppes{background:var(--nppes-color)}
+.time-block.idle{background:var(--bg-detail);color:var(--text-muted)}
+.time-legend{display:flex;gap:20px;margin-top:14px;font-size:12.5px;flex-wrap:wrap;align-items:center}
+.time-legend-item{display:flex;align-items:center;gap:8px}
+.time-legend-swatch{width:20px;height:12px;border-radius:3px}
+
+/* ACTION BAR */
+.action-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px}
+.action-left,.action-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-box{background:var(--bg-card);border:1px solid var(--border-light);border-radius:24px;padding:9px 16px;display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:13.5px;width:300px;max-width:100%;box-shadow:var(--shadow-sm)}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-box input{border:none;background:transparent;outline:none;font-size:13.5px;color:var(--text-primary);width:100%}
+.filter-chip{background:var(--bg-card);border:1px solid var(--border-light);border-radius:24px;padding:9px 16px;font-size:13px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-sm);transition:var(--transition)}
+.filter-chip:hover{border-color:var(--accent)}
+.filter-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filter-chip.active i,.filter-chip.active .count{color:#fff}
+.filter-chip .count{background:var(--bg-page);padding:2px 8px;border-radius:20px;font-size:11px;color:var(--text-muted);font-weight:700}
+.filter-chip.active .count{background:rgba(255,255,255,.25)}
+
+/* TABLE */
+.table-wrapper{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-light);box-shadow:var(--shadow-sm);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:700px}
+thead{border-bottom:1px solid var(--border-light)}
+th{text-align:left;padding:14px 16px;font-weight:700;font-size:11.5px;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid var(--border-light);font-size:13.5px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--bg-hover)}
+tbody tr{transition:var(--transition);cursor:pointer}
+.checkbox-cell{width:48px;padding-left:20px !important}
+.checkbox-cell input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+
+.status-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.status-chip i{font-size:11px}
+.chip-eligible{background:var(--success-soft);color:var(--success)}
+.chip-not-eligible{background:var(--danger-soft);color:var(--danger)}
+.chip-queued{background:var(--warning-soft);color:var(--warning)}
+.chip-verifying{background:var(--info-soft);color:var(--info)}
+.chip-notverified{background:#f1f5f9;color:#475569}
+[data-theme="dark"] .chip-notverified{background:#1e293b;color:#94a3b8}
+.chip-error{background:var(--danger-soft);color:var(--danger)}
+.chip-completed{background:var(--success-soft);color:var(--success)}
+.chip-running{background:var(--info-soft);color:var(--info)}
+.chip-paused{background:var(--warning-soft);color:var(--warning)}
+.chip-failed{background:var(--danger-soft);color:var(--danger)}
+.chip-admin{background:var(--danger-soft);color:var(--danger)}
+.chip-operator{background:var(--info-soft);color:var(--info)}
+.chip-viewer{background:var(--success-soft);color:var(--success)}
+.chip-partial{background:var(--warning-soft);color:var(--warning)}
+.chip-final{background:linear-gradient(135deg,var(--success),#059669);color:#fff}
+
+.btn-open-card{background:var(--bg-card);border:1px solid var(--border-medium);padding:6px 16px;border-radius:20px;font-size:12.5px;font-weight:600;color:var(--text-secondary);display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:var(--transition)}
+.btn-open-card:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-open-card:hover i{color:#fff}
+
+.batch-type-indicator{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:800}
+.batch-type-indicator.qpp{background:var(--qpp-soft);color:var(--qpp-color)}
+.batch-type-indicator.nppes{background:var(--nppes-soft);color:var(--nppes-color)}
+
+.progress-bar{height:6px;background:var(--border-light);border-radius:10px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:10px;transition:width .5s}
+.progress-fill.green{background:var(--success)}
+.progress-fill.orange{background:var(--warning)}
+.progress-fill.red{background:var(--danger)}
+.progress-fill.purple{background:var(--purple)}
+.progress-fill.qpp{background:var(--qpp-color)}
+.progress-fill.nppes{background:var(--nppes-color)}
+
+.play-btn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border-medium);background:var(--bg-card);color:var(--text-secondary);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:var(--transition);font-size:11px}
+.play-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* BATCH GROUPS (FINAL DATA) */
+.batch-group{background:var(--bg-card);border:1px solid var(--border-light);border-radius:12px;margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.batch-group-header{padding:16px 20px;background:linear-gradient(135deg,var(--success-soft),rgba(14,167,110,.05));display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:var(--transition);flex-wrap:wrap}
+.batch-group-header.qpp{background:linear-gradient(135deg,var(--qpp-soft),rgba(30,94,255,.05))}
+.batch-group-header.nppes{background:linear-gradient(135deg,var(--nppes-soft),rgba(124,58,237,.05))}
+.batch-group-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.batch-group-icon{width:44px;height:44px;border-radius:11px;background:var(--bg-card);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--shadow-sm)}
+.batch-group-header.qpp .batch-group-icon{color:var(--qpp-color)}
+.batch-group-header.nppes .batch-group-icon{color:var(--nppes-color)}
+.batch-group-header .batch-group-icon{color:var(--success)}
+.batch-group-title{font-size:15px;font-weight:800}
+.batch-group-meta{font-size:12px;color:var(--text-muted);margin-top:3px}
+.batch-group-stats{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.batch-group-stat{text-align:center}
+.batch-group-stat .val{font-size:18px;font-weight:800}
+.batch-group-stat .lbl{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.batch-group-toggle{padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.6);font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px}
+[data-theme="dark"] .batch-group-toggle{background:rgba(0,0,0,.3)}
+.batch-group-body{padding:0;max-height:0;overflow:hidden;transition:max-height .3s ease}
+.batch-group-body.open{max-height:5000px;padding:16px 20px}
+.npi-mini-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:var(--bg-detail);margin-bottom:8px;border:1px solid var(--border-light);transition:var(--transition);cursor:pointer}
+.npi-mini-row:hover{background:var(--accent-soft);border-color:var(--accent)}
+.npi-mini-row .npi-num{font-family:monospace;font-weight:700;font-size:13px;min-width:100px}
+.npi-mini-row .npi-name{flex:1;font-size:12.5px}
+.npi-mini-row .npi-chips{display:flex;gap:6px}
+.npi-mini-row .open-btn{padding:4px 10px;border-radius:20px;border:1px solid var(--border-medium);background:var(--bg-card);font-size:11px;font-weight:700;cursor:pointer;color:var(--text-primary)}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,26,53,.55);z-index:250;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;padding:20px;transition:.2s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:var(--bg-card);border-radius:14px;padding:24px;width:520px;max-width:100%;box-shadow:var(--shadow-xl);max-height:calc(100vh - 40px);overflow-y:auto}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.modal p{font-size:13px;color:var(--text-muted);margin-bottom:18px}
+.modal-form{display:flex;flex-direction:column;gap:14px}
+.modal-form label{font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;display:block}
+.modal-form select,.modal-form input{width:100%;padding:10px 12px;border:1px solid var(--border-light);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:13px;outline:none;font-family:inherit}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+
+/* SIDE CARD */
+.overlay{position:fixed;inset:0;background:rgba(10,26,53,.5);z-index:150;opacity:0;pointer-events:none;transition:opacity .25s ease;backdrop-filter:blur(2px)}
+.overlay.open{opacity:1;pointer-events:auto}
+.side-card{position:fixed;top:0;right:0;width:760px;max-width:100vw;height:100vh;background:var(--bg-card);box-shadow:-8px 0 40px rgba(10,26,53,.15);border-left:1px solid var(--border-light);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.side-card.open{transform:translateX(0)}
+.side-card-header{padding:14px 22px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.side-card-header h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.side-card-header h3 i{color:var(--accent)}
+.header-tools{display:flex;gap:4px}
+.tool-btn{background:transparent;border:none;color:var(--text-muted);cursor:pointer;padding:6px 9px;border-radius:7px;font-size:13px}
+.tool-btn:hover{background:var(--bg-hover);color:var(--accent)}
+.side-card-close{background:transparent;border:none;font-size:17px;color:var(--text-muted);cursor:pointer;padding:5px 9px;border-radius:7px}
+.side-card-close:hover{background:var(--bg-hover);color:var(--danger)}
+.side-card-body{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.card-top-section{padding:18px 22px 12px;flex-shrink:0;border-bottom:1px solid var(--border-light)}
+.npi-number{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.npi-name{font-size:14.5px;color:var(--text-secondary);margin-top:3px;font-weight:500}
+.npi-facility{font-size:13px;color:var(--text-muted);margin-top:2px}
+.status-chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.qpp-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.qpp-tile{background:var(--bg-detail);border-radius:var(--radius-md);padding:14px 10px;text-align:center;border:1px solid var(--border-light)}
+.qpp-tile .label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.qpp-tile .val{font-size:16px;font-weight:700;margin-top:5px}
+.qpp-tile .val.green{color:var(--success)}
+.qpp-tile .val.red{color:var(--danger)}
+.qpp-tile .val.blue{color:var(--info)}
+.qpp-tile .val.gray{color:var(--text-muted)}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap}
+.card-actions .btn{flex:1;min-width:100px;justify-content:center;padding:9px 0;font-size:12.5px}
+.card-tabs-wrap{flex-shrink:0;background:var(--bg-detail);border-bottom:1px solid var(--border-light);padding:6px 22px 0 22px;overflow-x:auto;scrollbar-width:none}
+.card-tabs-wrap::-webkit-scrollbar{display:none}
+.card-tabs{display:flex;gap:2px}
+.card-tab{padding:11px 14px;font-size:12.5px;font-weight:700;color:var(--text-muted);border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer;margin-bottom:-1px;display:flex;align-items:center;gap:6px}
+.card-tab:hover{color:var(--text-primary);background:var(--bg-hover)}
+.card-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg-card)}
+.card-content{flex:1;overflow-y:auto;padding:18px 22px 28px}
+.detail-section{background:var(--bg-detail);border-radius:var(--radius-md);padding:14px;border:1px solid var(--border-light);font-size:13px}
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-light);gap:12px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:var(--text-muted);flex-shrink:0;font-size:12.5px}
+.detail-value{font-weight:600;text-align:right;word-break:break-word;font-size:12.5px}
+.tab-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin:16px 0 8px;display:flex;align-items:center;gap:6px}
+.tab-section-label:first-child{margin-top:0}
+.tab-section-label i{color:var(--accent);font-size:11px}
+.address-block{background:var(--bg-detail);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--border-light);margin-bottom:8px}
+.address-block .addr-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.address-block .addr-title i{color:var(--accent)}
+.address-block .addr-line{font-size:13px;line-height:1.65}
+.mini-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.mini-table th{padding:8px 10px;font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border-light);text-align:left;font-weight:700}
+.mini-table td{padding:9px 10px;border-bottom:1px solid var(--border-light);font-size:12.5px}
+.mini-table tr:last-child td{border-bottom:none}
+.chip-mini{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:10.5px;font-weight:700}
+.chip-mini.yes{background:var(--success-soft);color:var(--success)}
+.chip-mini.no{background:var(--bg-hover);color:var(--text-muted)}
+.year-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border-light);gap:8px}
+.year-row:last-child{border-bottom:none}
+.year-row .yr{font-weight:700;font-size:14px;width:55px}
+.year-row .yr-flags{display:flex;gap:5px;flex-wrap:wrap}
+.endpoint-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light)}
+.endpoint-row:last-child{border-bottom:none}
+.endpoint-icon{width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.endpoint-content{flex:1;min-width:0}
+.endpoint-content .ep-url{font-size:12.5px;color:var(--accent);word-break:break-all;font-weight:500}
+.endpoint-content .ep-meta{font-size:11px;color:var(--text-muted);margin-top:3px}
+.note-item{background:var(--bg-detail);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--border-light);margin-bottom:8px;border-left:3px solid var(--accent)}
+.note-item .note-head{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:5px}
+.note-item .note-body{font-size:12.5px;line-height:1.55}
+.timeline{position:relative;padding-left:26px}
+.timeline::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--border-light)}
+.timeline-item{position:relative;padding-bottom:16px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-item::before{content:'';position:absolute;left:-22px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--bg-card)}
+.timeline-item.success::before{background:var(--success)}
+.timeline-item.warning::before{background:var(--warning)}
+.timeline-item.error::before{background:var(--danger)}
+.timeline-item .tl-time{font-size:11px;color:var(--text-muted);margin-bottom:2px}
+.timeline-item .tl-action{font-size:12.5px;font-weight:500}
+.raw-pre{background:var(--bg-input);padding:14px;border-radius:var(--radius-sm);overflow-x:auto;font-size:11.5px;color:var(--text-secondary);border:1px solid var(--border-light);font-family:'Courier New',monospace;line-height:1.6;max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.info-note{font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--accent-soft);border-radius:var(--radius-sm);border-left:3px solid var(--accent);margin-top:14px}
+
+/* CHARTS */
+.chart-container{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-light);box-shadow:var(--shadow-sm);padding:20px;margin-bottom:16px}
+.chart-container h3{font-size:14px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.chart-container h3 i{color:var(--accent)}
+.chart-container .subtitle{font-size:12px;color:var(--text-muted);margin-bottom:16px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding:10px 0}
+.bar{flex:1;background:linear-gradient(180deg,var(--accent),var(--accent-hover));border-radius:6px 6px 0 0;min-height:4px;position:relative}
+.bar.green{background:linear-gradient(180deg,var(--success),#0a7d55)}
+.bar.orange{background:linear-gradient(180deg,var(--warning),#92400e)}
+.bar.purple{background:linear-gradient(180deg,var(--purple),#5b21b6)}
+.bar.qpp{background:linear-gradient(180deg,var(--qpp-color),#4f7dff)}
+.bar.nppes{background:linear-gradient(180deg,var(--nppes-color),#9b5cf6)}
+.bar .bar-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--text-muted);white-space:nowrap}
+.bar .bar-value{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:700}
+.donut-chart{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+.donut{width:160px;height:160px;border-radius:50%;position:relative}
+.donut-inner{position:absolute;inset:20px;background:var(--bg-card);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-inner .num{font-size:22px;font-weight:700}
+.donut-inner .lbl{font-size:11px;color:var(--text-muted)}
+.donut-legend{display:flex;flex-direction:column;gap:10px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+.legend-item .val{margin-left:auto;font-weight:700}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* ACTIVITY / STATE */
+.activity-feed{display:flex;flex-direction:column;gap:12px}
+.activity-item{display:flex;gap:12px;padding:12px;border-radius:var(--radius-md);background:var(--bg-detail);border:1px solid var(--border-light)}
+.activity-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.activity-icon.blue{background:var(--info-soft);color:var(--info)}
+.activity-icon.green{background:var(--success-soft);color:var(--success)}
+.activity-icon.orange{background:var(--warning-soft);color:var(--warning)}
+.activity-icon.purple{background:var(--purple-soft);color:var(--purple)}
+.activity-content{flex:1}
+.activity-content .txt{font-size:12.5px}
+.activity-content .time{font-size:10.5px;color:var(--text-muted);margin-top:3px}
+.state-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.state-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:8px;background:var(--bg-detail);border:1px solid var(--border-light);font-size:12.5px}
+.state-item .code{font-weight:700}
+.state-item .cnt{color:var(--text-muted);font-size:11.5px}
+
+/* REPORTS / AUDIT / IMPORT */
+.report-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.report-stat{background:var(--bg-detail);border-radius:var(--radius-md);padding:16px;border:1px solid var(--border-light)}
+.report-stat .label{font-size:11.5px;color:var(--text-muted);margin-bottom:6px}
+.report-stat .num{font-size:22px;font-weight:700}
+.report-stat .trend{font-size:11px;margin-top:4px;color:var(--success)}
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.export-block{background:var(--bg-detail);border-radius:var(--radius-md);padding:16px;border:1px solid var(--border-light)}
+.export-block h4{font-size:11.5px;font-weight:700;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.export-block h4 i{color:var(--accent)}
+.row-options{display:flex;flex-wrap:wrap;gap:6px}
+.tag-option{padding:6px 12px;border-radius:20px;font-size:11.5px;font-weight:600;border:1px solid var(--border-light);background:var(--bg-card);cursor:pointer;transition:var(--transition)}
+.tag-option:hover{border-color:var(--accent);color:var(--accent)}
+.tag-option.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.recent-exports .export-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border-light);font-size:13px;gap:12px}
+.recent-exports .export-row:last-child{border-bottom:none}
+.export-row .left{display:flex;align-items:center;gap:12px;min-width:0}
+.export-row .file-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent);font-size:14px;flex-shrink:0}
+.export-row .file-icon.green{background:var(--success-soft);color:var(--success)}
+.export-row .meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.audit-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-light)}
+.audit-item:last-child{border-bottom:none}
+.audit-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.audit-avatar.green{background:var(--success-soft);color:var(--success)}
+.audit-avatar.orange{background:var(--warning-soft);color:var(--warning)}
+.audit-avatar.red{background:var(--danger-soft);color:var(--danger)}
+.audit-content{flex:1;min-width:0}
+.audit-content .action{font-size:13px;font-weight:500}
+.audit-content .meta{font-size:10.5px;color:var(--text-muted);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.import-options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.option-group label{font-size:12.5px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:6px}
+.option-group select,.option-group input{width:100%;padding:10px 12px;border:1px solid var(--border-light);border-radius:var(--radius-sm);background:var(--bg-input);color:var(--text-primary);font-size:13px;outline:none;font-family:inherit}
+.file-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.file-slot{border:1px dashed var(--border-medium);border-radius:var(--radius-md);padding:20px 16px;text-align:center;transition:var(--transition);background:var(--bg-detail)}
+.file-slot:hover{border-color:var(--accent);background:var(--accent-soft)}
+.file-slot .icon{font-size:28px;color:var(--accent);margin-bottom:10px}
+.file-slot .name{font-size:13px;font-weight:700;margin-bottom:4px}
+.file-slot .meta{font-size:11.5px;color:var(--text-muted)}
+.pipeline-steps{display:flex;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.pipe-step{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;background:var(--bg-detail);border:1px solid var(--border-light);font-size:12.5px;font-weight:600}
+.pipe-step.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pipe-step.done{background:var(--success-soft);border-color:var(--success);color:var(--success)}
+.pipe-arrow{color:var(--text-muted);font-size:12px}
+
+/* TOASTS */
+.toast-container{position:fixed;top:20px;right:20px;z-index:600;display:flex;flex-direction:column;gap:8px;max-width:calc(100vw - 40px)}
+.toast{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:12px 16px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;min-width:260px;animation:slideIn .3s ease;border-left:4px solid var(--accent)}
+.toast.success{border-left-color:var(--success)}
+.toast.warning{border-left-color:var(--warning)}
+.toast.error{border-left-color:var(--danger)}
+.toast.qpp{border-left-color:var(--qpp-color)}
+.toast.nppes{border-left-color:var(--nppes-color)}
+@keyframes slideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+
+/* NOTIF PANEL */
+.notif-panel{position:fixed;top:60px;right:20px;width:380px;max-width:calc(100vw - 40px);background:var(--bg-card);border-radius:14px;box-shadow:var(--shadow-xl);border:1px solid var(--border-light);z-index:300;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-10px);transition:.2s}
+.notif-panel.open{opacity:1;pointer-events:auto;transform:translateY(0)}
+.notif-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border-light)}
+.notif-header h4{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.notif-header .mark-read{font-size:11.5px;color:var(--accent);cursor:pointer;font-weight:600}
+.notif-body{max-height:400px;overflow-y:auto}
+.notif-item{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border-light);cursor:pointer}
+.notif-item:hover{background:var(--bg-hover)}
+.notif-item.unread{background:var(--accent-soft)}
+.notif-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.notif-icon.green{background:var(--success-soft);color:var(--success)}
+.notif-icon.blue{background:var(--info-soft);color:var(--info)}
+.notif-icon.purple{background:var(--purple-soft);color:var(--purple)}
+.notif-icon.orange{background:var(--warning-soft);color:var(--warning)}
+.notif-content{flex:1}
+.notif-content .title{font-size:12.5px;font-weight:600}
+.notif-content .body{font-size:11.5px;color:var(--text-muted);margin-top:3px}
+.notif-content .time{font-size:10.5px;color:var(--text-muted);margin-top:4px}
+
+/* COMMAND PALETTE */
+.command-palette-overlay{position:fixed;inset:0;background:rgba(10,26,53,.6);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding-top:15vh;opacity:0;pointer-events:none;transition:.2s;backdrop-filter:blur(4px)}
+.command-palette-overlay.open{opacity:1;pointer-events:auto}
+.command-palette{width:560px;max-width:95vw;background:var(--bg-card);border-radius:14px;box-shadow:var(--shadow-xl);border:1px solid var(--border-light);overflow:hidden}
+.cmd-input-wrap{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border-light)}
+.cmd-input-wrap i{font-size:18px;color:var(--accent)}
+.cmd-input{flex:1;border:none;background:transparent;outline:none;font-size:16px;color:var(--text-primary);font-weight:500}
+.cmd-results{max-height:400px;overflow-y:auto;padding:8px}
+.cmd-section-label{font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 12px 6px}
+.cmd-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer}
+.cmd-item:hover,.cmd-item.selected{background:var(--accent-soft)}
+.cmd-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--bg-page);color:var(--accent);font-size:14px;flex-shrink:0}
+.cmd-text{flex:1;min-width:0}
+.cmd-title{font-size:13.5px;font-weight:600}
+.cmd-sub{font-size:11.5px;color:var(--text-muted);margin-top:2px}
+.cmd-shortcut{font-size:11px;color:var(--text-muted);background:var(--bg-page);padding:2px 6px;border-radius:4px;border:1px solid var(--border-light);font-family:monospace}
+.cmd-empty{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px}
+
+/* SHORTCUTS MODAL */
+.shortcuts-modal{position:fixed;inset:0;background:rgba(10,26,53,.6);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px);padding:20px}
+.shortcuts-modal.open{opacity:1;pointer-events:auto}
+.shortcuts-content{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;width:560px;max-width:100%;box-shadow:var(--shadow-xl);max-height:calc(100vh - 40px);overflow-y:auto}
+.shortcuts-content h3{font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.shortcut-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.shortcut-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;background:var(--bg-detail);font-size:13px;gap:12px}
+.shortcut-item kbd{background:var(--bg-card);border:1px solid var(--border-light);padding:3px 8px;border-radius:6px;font-size:11px;font-family:monospace;color:var(--text-secondary);font-weight:600;white-space:nowrap}
+
+/* AI PANEL */
+.ai-panel{position:fixed;bottom:20px;right:380px;width:400px;max-width:calc(100vw - 40px);background:var(--bg-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);border:1px solid var(--border-light);z-index:100;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px);transition:var(--transition);max-height:560px;display:flex;flex-direction:column}
+.ai-panel.open{opacity:1;pointer-events:auto;transform:translateY(0)}
+.ai-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;flex-shrink:0}
+.ai-header h4{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ai-header .close-btn{background:transparent;border:none;color:#fff;cursor:pointer;padding:4px 8px;border-radius:6px;font-size:14px}
+.ai-header .close-btn:hover{background:rgba(255,255,255,.15)}
+.ai-body{padding:16px 18px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.ai-message{display:flex;gap:10px;max-width:100%}
+.ai-message .avatar-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.ai-message .avatar-sm.user{background:var(--accent-soft);color:var(--accent)}
+.ai-message .avatar-sm.bot{background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff}
+.ai-message .bubble{background:var(--bg-detail);padding:10px 14px;border-radius:12px;font-size:12.5px;line-height:1.55;max-width:88%}
+.ai-message.user .bubble{background:var(--accent-soft);color:var(--accent)}
+.ai-suggestions{display:flex;flex-direction:column;gap:6px;padding:0 18px 14px}
+.ai-suggestion{padding:8px 12px;border:1px solid var(--border-light);border-radius:20px;font-size:12px;cursor:pointer;background:var(--bg-card);transition:var(--transition);display:flex;align-items:center;gap:8px}
+.ai-suggestion:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.ai-suggestion i{color:var(--accent);font-size:11px}
+.ai-input-wrap{display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:1px solid var(--border-light);background:var(--bg-page)}
+.ai-input-wrap input{flex:1;border:1px solid var(--border-light);border-radius:20px;padding:8px 14px;font-size:12.5px;outline:none;background:var(--bg-card);color:var(--text-primary)}
+.ai-input-wrap input:focus{border-color:var(--accent)}
+.ai-input-wrap .send-btn{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px}
+.ai-input-wrap .send-btn:hover{background:var(--accent-hover)}
+
+/* BULK BAR / JOBS PANEL */
+.bulk-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(140%);background:var(--bg-card);border:1px solid var(--border-light);border-radius:40px;padding:10px 20px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-xl);z-index:90;transition:transform .3s;flex-wrap:wrap;max-width:calc(100vw - 40px)}
+.bulk-bar.show{transform:translateX(-50%) translateY(0)}
+.bulk-bar .count{font-weight:700;color:var(--accent);font-size:13.5px}
+.bulk-bar .divider{width:1px;height:20px;background:var(--border-light)}
+.jobs-panel{position:fixed;bottom:20px;right:20px;width:340px;max-width:calc(100vw - 40px);background:var(--bg-card);border-radius:14px;box-shadow:var(--shadow-xl);border:1px solid var(--border-light);z-index:100;overflow:hidden}
+.jobs-panel.minimized .jobs-body{display:none}
+.jobs-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer}
+.jobs-header h4{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.jobs-header .count-badge{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.jobs-body{padding:4px 16px 16px;max-height:380px;overflow-y:auto;border-top:1px solid var(--border-light)}
+.job-item{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid var(--border-light)}
+.job-item:last-child{border-bottom:none}
+.job-top{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;align-items:center}
+.job-meta{font-size:10.5px;color:var(--text-muted)}
+
+@media (max-width:1200px){
+  .tiles,.tiles.grid-6{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .side-card{width:560px}
+  .charts-row,.charts-row-2{grid-template-columns:1fr}
+  .file-slots{grid-template-columns:1fr}
+  .export-grid{grid-template-columns:1fr}
+  .report-stats{grid-template-columns:1fr}
+  .shortcut-grid{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .sidebar{width:68px;padding:16px 8px}
+  .sidebar .logo-text,.sidebar .nav-item span:not(.badge),.sidebar .nav-section-label,.sidebar .sidebar-footer-text,.sidebar .nav-item .badge,.sidebar .collapse-btn{display:none}
+  .sidebar .nav-item{justify-content:center;padding:11px}
+  .sidebar .logo-area{justify-content:center}
+  .content{padding:16px}
+  .side-card{width:100vw}
+  .qpp-tiles{grid-template-columns:repeat(2,1fr)}
+  .ai-panel{right:16px;bottom:80px}
+  .notif-panel{right:16px;left:16px}
+}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--border-medium);border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fas fa-stethoscope"></i></div>
+      <div class="logo-text">NPI <span>Intel</span></div>
+      <button class="collapse-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    </div>
+    <div class="nav-section-label">Main</div>
+    <nav class="nav-menu">
+      <div class="nav-item" data-view="dashboard" onclick="switchView('dashboard', this)"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
+      <div class="nav-item active" data-view="providers" onclick="switchView('providers', this)"><i class="fas fa-users"></i> <span>Providers</span> <span class="badge" id="navProvidersBadge">12</span></div>
+      <div class="nav-item" data-view="batch" onclick="switchView('batch', this)"><i class="fas fa-layer-group"></i> <span>Batch Manager</span> <span class="badge accent" id="navBatchBadge">0</span></div>
+      <div class="nav-item" data-view="finalData" onclick="switchView('finalData', this)"><i class="fas fa-database"></i> <span>Final Data</span> <span class="badge success" id="navFinalBadge">0</span></div>
+      <div class="nav-item" data-view="monitor" onclick="switchView('monitor', this)"><i class="fas fa-satellite-dish"></i> <span>Live Monitor</span> <span class="live-dot"></span></div>
+    </nav>
+    <div class="nav-section-label">Data</div>
+    <nav class="nav-menu">
+      <div class="nav-item" data-view="import" onclick="switchView('import', this)"><i class="fas fa-cloud-upload-alt"></i> <span>CMS Import</span></div>
+      <div class="nav-item" data-view="wizard" onclick="switchView('wizard', this)"><i class="fas fa-wand-magic-sparkles"></i> <span>Import Wizard</span></div>
+      <div class="nav-item" data-view="reports" onclick="switchView('reports', this)"><i class="fas fa-chart-pie"></i> <span>Reports</span></div>
+      <div class="nav-item" data-view="analytics" onclick="switchView('analytics', this)"><i class="fas fa-chart-bar"></i> <span>Analytics</span></div>
+    </nav>
+    <div class="nav-section-label">System</div>
+    <nav class="nav-menu">
+      <div class="nav-item" data-view="audit" onclick="switchView('audit', this)"><i class="fas fa-history"></i> <span>Audit log</span></div>
+      <div class="nav-item" data-view="users" onclick="switchView('users', this)"><i class="fas fa-user-shield"></i> <span>Users & Roles</span></div>
+      <div class="nav-item" data-view="settings" onclick="switchView('settings', this)"><i class="fas fa-cog"></i> <span>Settings</span></div>
+      <div class="nav-item" data-view="api" onclick="switchView('api', this)"><i class="fas fa-key"></i> <span>API Keys</span></div>
+      <div class="nav-item" data-view="webhooks" onclick="switchView('webhooks', this)"><i class="fas fa-webhook"></i> <span>Webhooks</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <span style="display:flex;align-items:center;gap:8px;"><i class="fas fa-moon" id="themeIcon"></i> <span id="themeLabel">Dark</span></span>
+        <div class="toggle-switch" id="themeSwitch"></div>
+      </div>
+      <div class="status-row sidebar-footer-text"><span class="dot"></span> MongoDB connected</div>
+      <div class="status-row sidebar-footer-text"><i class="fas fa-code-branch" style="font-size:10px;"></i> v22 Unified</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 id="pageTitle">Provider List</h1>
+        <div class="subhead">
+          <span class="chip-source"><i class="fas fa-database"></i> CMS / NPPES</span>
+          <span class="chip-source"><i class="fas fa-bolt" style="color:var(--qpp-color);"></i> QPP</span>
+          <span class="chip-source"><i class="fas fa-id-card" style="color:var(--nppes-color);"></i> NPPES</span>
+          <span class="chip-source live"><i class="fas fa-circle" style="font-size:7px;"></i> Live</span>
+          <span id="lastSyncLabel">Last sync: 22s ago</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="global-search-trigger" onclick="openCommandPalette()">
+          <i class="fas fa-search"></i><span>Search everything...</span><span class="kbd-hint">⌘K</span>
+        </div>
+        <button class="icon-btn" onclick="toggleAIPanel()" title="AI Assistant"><i class="fas fa-robot"></i></button>
+        <button class="icon-btn" onclick="openShortcuts()" title="Shortcuts"><i class="fas fa-keyboard"></i></button>
+        <button class="icon-btn" onclick="toggleNotifPanel()"><i class="fas fa-bell"></i><span class="notif-dot" id="notifDot"></span></button>
+        <button class="btn btn-outline" onclick="showToast('Export started','info')"><i class="fas fa-download"></i> Export</button>
+        <button class="btn btn-qpp" onclick="openVerifyModal('qpp')"><i class="fas fa-bolt"></i> Run QPP</button>
+        <button class="btn btn-nppes" onclick="openVerifyModal('nppes')"><i class="fas fa-id-card"></i> Run NPPES</button>
+        <div class="avatar">AD</div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="view" id="view-dashboard">
+        <div class="tiles">
+          <div class="tile"><div class="tile-left"><h4>Total NPIs</h4><div class="value">9.74M</div><div class="sub">Full CMS dataset</div></div><div class="tile-icon blue"><i class="fas fa-database"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>QPP Checked</h4><div class="value" style="color:var(--qpp-color);" id="dashQppCount">0</div><div class="sub">NPIs verified</div></div><div class="tile-icon qpp"><i class="fas fa-bolt"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>NPPES Verified</h4><div class="value" style="color:var(--nppes-color);" id="dashNppesCount">0</div><div class="sub">Registry fetched</div></div><div class="tile-icon nppes"><i class="fas fa-id-card"></i></div></div>
+          <div class="tile" onclick="switchView('finalData', document.querySelector('[data-view=finalData]'))"><div class="tile-left"><h4>Final Records</h4><div class="value" style="color:var(--success);" id="dashFinalCount">0</div><div class="sub">Fully verified</div></div><div class="tile-icon green"><i class="fas fa-check-double"></i></div></div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-column"></i> Verification Volume (14 days)</h3>
+            <div class="subtitle"><span style="color:var(--qpp-color);font-weight:700;">■ QPP</span> &nbsp; <span style="color:var(--nppes-color);font-weight:700;">■ NPPES</span></div>
+            <div class="bar-chart">
+              <div class="bar qpp" style="height:45%;"><span class="bar-value">4.2k</span><span class="bar-label">Oct 1</span></div>
+              <div class="bar nppes" style="height:62%;"><span class="bar-value">5.8k</span><span class="bar-label">Oct 2</span></div>
+              <div class="bar qpp" style="height:78%;"><span class="bar-value">7.3k</span><span class="bar-label">Oct 3</span></div>
+              <div class="bar nppes" style="height:55%;"><span class="bar-value">5.1k</span><span class="bar-label">Oct 4</span></div>
+              <div class="bar qpp" style="height:88%;"><span class="bar-value">8.2k</span><span class="bar-label">Oct 5</span></div>
+              <div class="bar nppes" style="height:95%;"><span class="bar-value">8.9k</span><span class="bar-label">Oct 6</span></div>
+              <div class="bar qpp" style="height:72%;"><span class="bar-value">6.7k</span><span class="bar-label">Oct 7</span></div>
+              <div class="bar nppes" style="height:60%;"><span class="bar-value">5.6k</span><span class="bar-label">Oct 8</span></div>
+              <div class="bar qpp" style="height:82%;"><span class="bar-value">7.7k</span><span class="bar-label">Oct 9</span></div>
+              <div class="bar nppes" style="height:68%;"><span class="bar-value">6.4k</span><span class="bar-label">Oct 10</span></div>
+              <div class="bar qpp" style="height:100%;"><span class="bar-value">9.4k</span><span class="bar-label">Oct 11</span></div>
+              <div class="bar nppes" style="height:75%;"><span class="bar-value">7.0k</span><span class="bar-label">Oct 12</span></div>
+              <div class="bar qpp" style="height:58%;"><span class="bar-value">5.4k</span><span class="bar-label">Oct 13</span></div>
+              <div class="bar nppes" style="height:35%;"><span class="bar-value">3.3k</span><span class="bar-label">Oct 14</span></div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-pie"></i> QPP Status</h3>
+            <div class="subtitle">Across all verified NPIs</div>
+            <div class="donut-chart">
+              <div class="donut" style="background:conic-gradient(var(--success) 0deg 155deg,var(--danger) 155deg 220deg,var(--warning) 220deg 305deg,var(--info) 305deg 360deg);">
+                <div class="donut-inner"><div class="num">4.21M</div><div class="lbl">checked</div></div>
+              </div>
+              <div class="donut-legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--success);"></span> Eligible <span class="val">1.81M</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--danger);"></span> Not Eligible <span class="val">0.76M</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--warning);"></span> Pending <span class="val">0.99M</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--info);"></span> Error <span class="val">0.65M</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROVIDERS -->
+      <div class="view active" id="view-providers">
+        <div class="tiles">
+          <div class="tile"><div class="tile-left"><h4>Total in view</h4><div class="value" id="provTotal">12</div><div class="sub">Loaded NPIs</div></div><div class="tile-icon blue"><i class="fas fa-database"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>QPP Eligible</h4><div class="value" style="color:var(--success);" id="provEligible">0</div><div class="sub">Confirmed</div></div><div class="tile-icon green"><i class="fas fa-check-circle"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Errors</h4><div class="value" style="color:var(--danger);" id="provErrors">0</div><div class="sub">Retry</div></div><div class="tile-icon red"><i class="fas fa-times-circle"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>NPPES Verified</h4><div class="value" style="color:var(--info);" id="provVerified">0</div><div class="sub">Fetched</div></div><div class="tile-icon blue"><i class="fas fa-id-card"></i></div></div>
+        </div>
+        <div class="action-bar">
+          <div class="action-left">
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search NPI, provider..." oninput="handleSearch()"></div>
+            <div class="filter-chip active" data-filter="all" onclick="setFilter('all', this)"><i class="fas fa-list"></i> All <span class="count" id="countAll">12</span></div>
+            <div class="filter-chip" data-filter="eligible" onclick="setFilter('eligible', this)"><i class="fas fa-check-circle"></i> Eligible <span class="count" id="countEligible">0</span></div>
+            <div class="filter-chip" data-filter="not-eligible" onclick="setFilter('not-eligible', this)"><i class="fas fa-times-circle"></i> Not Eligible <span class="count" id="countNotEligible">0</span></div>
+            <div class="filter-chip" data-filter="final" onclick="setFilter('final', this)"><i class="fas fa-check-double"></i> Final <span class="count" id="countFinal">0</span></div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th class="checkbox-cell"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th><th>NPI</th><th>Provider Name</th><th>Facility</th><th>QPP Status</th><th>NPPES</th><th>Final</th><th>Actions</th></tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BATCH MANAGER (Updated to match screenshot) -->
+      <div class="view" id="view-batch">
+        <div class="bm-tabs">
+          <div class="bm-tab qpp active" onclick="switchBatchTab('qpp', this)"><i class="fas fa-bolt"></i> QPP Batches <span class="tab-count" id="tabQppCount">0</span></div>
+          <div class="bm-tab nppes" onclick="switchBatchTab('nppes', this)"><i class="fas fa-id-card"></i> NPPES Batches <span class="tab-count" id="tabNppesCount">0</span></div>
+          <div class="bm-tab all" onclick="switchBatchTab('all', this)"><i class="fas fa-list"></i> All Batches <span class="tab-count" id="tabAllCount">0</span></div>
+        </div>
+
+        <div class="tiles grid-6">
+          <div class="tile"><div class="tile-left"><h4>Total</h4><div class="value" id="bmTotal">0</div><div class="sub">In view</div></div><div class="tile-icon blue"><i class="fas fa-layer-group"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Running</h4><div class="value" style="color:var(--info);" id="bmRunning">0</div><div class="sub">Live</div></div><div class="tile-icon blue"><i class="fas fa-spinner fa-pulse"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Done</h4><div class="value" style="color:var(--success);" id="bmDone">0</div><div class="sub">Finished</div></div><div class="tile-icon green"><i class="fas fa-check-circle"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Queued</h4><div class="value" style="color:var(--warning);" id="bmQueued">0</div><div class="sub">Waiting</div></div><div class="tile-icon orange"><i class="fas fa-clock"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Failed</h4><div class="value" style="color:var(--danger);" id="bmFailed">0</div><div class="sub">Retry</div></div><div class="tile-icon red"><i class="fas fa-times-circle"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Paused</h4><div class="value" style="color:var(--purple);" id="bmPaused">0</div><div class="sub">Resumable</div></div><div class="tile-icon purple"><i class="fas fa-pause-circle"></i></div></div>
+        </div>
+
+        <div class="time-schedule-card">
+          <div class="time-schedule-header"><h3><i class="fas fa-clock"></i> 24-Hour Time Slot Schedule</h3></div>
+          <div class="time-schedule-sub">QPP runs 22:00-02:00 · NPPES runs 02:00-06:00 · No overlap</div>
+          <div class="time-labels"><span>12 AM</span><span>4 AM</span><span>8 AM</span><span>12 PM</span><span>4 PM</span><span>8 PM</span><span>11 PM</span></div>
+          <div class="time-track" id="timeSlotGrid"></div>
+          <div class="time-legend">
+            <div class="time-legend-item"><div class="time-legend-swatch" style="background:var(--qpp-color);"></div><span>QPP Time Slot</span></div>
+            <div class="time-legend-item"><div class="time-legend-swatch" style="background:var(--nppes-color);"></div><span>NPPES Time Slot</span></div>
+            <div class="time-legend-item"><div class="time-legend-swatch" style="background:var(--bg-detail);border:1px solid var(--border-light);"></div><span>Idle</span></div>
+          </div>
+        </div>
+
+        <!-- Batch Table Matching Screenshot -->
+        <div class="section-card" style="padding:0;overflow:hidden;">
+          <div style="padding:18px 20px 14px;border-bottom:1px solid var(--border-light);">
+            <h3 style="margin-bottom:4px;"><i class="fas fa-list-ol"></i> Batches</h3>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>BATCH ID</th>
+                  <th>TYPE</th>
+                  <th>NPI RANGE</th>
+                  <th>STATUS</th>
+                  <th>PROGRESS</th>
+                  <th>ETA</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="batchTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINAL DATA -->
+      <div class="view" id="view-finalData">
+        <div class="tiles">
+          <div class="tile"><div class="tile-left"><h4>Total NPIs in Final</h4><div class="value" style="color:var(--success);" id="finalTotal">0</div><div class="sub">Across all batches</div></div><div class="tile-icon green"><i class="fas fa-database"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Completed Batches</h4><div class="value" style="color:var(--accent);" id="finalBatches">0</div><div class="sub">Moved to Final</div></div><div class="tile-icon blue"><i class="fas fa-layer-group"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>QPP Verified</h4><div class="value" style="color:var(--qpp-color);" id="finalQpp">0</div><div class="sub">NPIs</div></div><div class="tile-icon qpp"><i class="fas fa-bolt"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>NPPES Verified</h4><div class="value" style="color:var(--nppes-color);" id="finalNppes">0</div><div class="sub">NPIs</div></div><div class="tile-icon nppes"><i class="fas fa-id-card"></i></div></div>
+        </div>
+        <div class="action-bar">
+          <div class="action-left">
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="finalSearchInput" placeholder="Search batch or NPI..." oninput="renderFinalData()"></div>
+          </div>
+          <div class="action-right">
+            <button class="btn btn-outline" onclick="expandAllBatches()"><i class="fas fa-expand"></i> Expand All</button>
+            <button class="btn btn-outline" onclick="collapseAllBatches()"><i class="fas fa-compress"></i> Collapse All</button>
+            <button class="btn btn-primary" onclick="showToast('Final Data export queued','success')"><i class="fas fa-download"></i> Export</button>
+          </div>
+        </div>
+        <div id="finalBatchList"></div>
+      </div>
+
+      <!-- LIVE MONITOR -->
+      <div class="view" id="view-monitor">
+        <div class="tiles">
+          <div class="tile"><div class="tile-left"><h4>QPP Running</h4><div class="value" style="color:var(--qpp-color);" id="monitorQppRunning">0</div></div><div class="tile-icon qpp"><i class="fas fa-bolt"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>NPPES Running</h4><div class="value" style="color:var(--nppes-color);" id="monitorNppesRunning">0</div></div><div class="tile-icon nppes"><i class="fas fa-id-card"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Current Slot</h4><div class="value" style="font-size:18px;" id="monitorCurrentSlot">—</div></div><div class="tile-icon purple"><i class="fas fa-clock"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Throughput</h4><div class="value" id="monitorThroughput">50</div><div class="sub">req/sec</div></div><div class="tile-icon green"><i class="fas fa-tachometer-alt"></i></div></div>
+        </div>
+        <div class="section-card">
+          <h3><i class="fas fa-satellite-dish"></i> Live Monitor</h3>
+          <div class="subtitle">Real-time batch processing status</div>
+          <div class="table-scroll"><table><thead><tr><th>Batch</th><th>Type</th><th>Worker</th><th>Progress</th><th>ETA</th><th>Status</th></tr></thead><tbody id="monitorTableBody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- CMS IMPORT -->
+      <div class="view" id="view-import">
+        <div class="section-card">
+          <h3><i class="fas fa-cloud-upload-alt"></i> CMS Data Import</h3>
+          <div class="subtitle">Upload CMS files — creates QPP + NPPES batch queues</div>
+          <div class="file-slots">
+            <div class="file-slot" onclick="startImport()">
+              <div class="icon"><i class="fas fa-file-csv"></i></div>
+              <div class="name">NPI Main File</div>
+              <div class="meta">npidata_pfile_20261001.csv<br>4.2 GB · 330 columns</div>
+              <div style="margin-top:10px;"><span class="status-chip chip-completed"><i class="fas fa-check-circle"></i> Imported</span></div>
+            </div>
+            <div class="file-slot" onclick="startImport()">
+              <div class="icon"><i class="fas fa-file-csv"></i></div>
+              <div class="name">Practice Location</div>
+              <div class="meta">pl_pfile_20261001.csv<br>980 MB</div>
+              <div style="margin-top:10px;"><span class="status-chip chip-completed"><i class="fas fa-check-circle"></i> Imported</span></div>
+            </div>
+            <div class="file-slot" onclick="startImport()">
+              <div class="icon"><i class="fas fa-file-csv"></i></div>
+              <div class="name">Endpoint File</div>
+              <div class="meta">endpoint_pfile_20261001.csv<br>145 MB</div>
+              <div style="margin-top:10px;"><span class="status-chip chip-queued"><i class="fas fa-clock"></i> Pending</span></div>
+            </div>
+          </div>
+          <div class="pipeline-steps">
+            <div class="pipe-step done"><i class="fas fa-check"></i> Download</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step done"><i class="fas fa-check"></i> Validate</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step active"><i class="fas fa-spinner fa-pulse"></i> Import to MongoDB</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step"><i class="fas fa-clock"></i> Reconcile</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:20px;">
+            <button class="btn btn-primary" onclick="startImport()"><i class="fas fa-play"></i> Start import</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIZARD -->
+      <div class="view" id="view-wizard">
+        <div class="section-card">
+          <h3><i class="fas fa-wand-magic-sparkles"></i> Import Wizard</h3>
+          <div class="subtitle">Step-by-step guided import process</div>
+          <div class="pipeline-steps">
+            <div class="pipe-step done"><i class="fas fa-check"></i> Upload</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step done"><i class="fas fa-check"></i> Map Columns</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step active"><i class="fas fa-spinner fa-pulse"></i> Preview Data</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step"><i class="fas fa-clock"></i> Validate</div>
+            <div class="pipe-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="pipe-step"><i class="fas fa-clock"></i> Import</div>
+          </div>
+          <div class="info-note"><i class="fas fa-info-circle"></i> 330 CMS columns detected. Previewing first 5 rows.</div>
+          <div class="table-wrapper" style="box-shadow:none;margin-top:16px;">
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>NPI</th><th>Provider Name</th><th>Entity Type</th><th>Taxonomy</th><th>State</th></tr></thead>
+                <tbody>
+                  <tr><td>1234567890</td><td>Dr. Sarah Chen, MD</td><td>Individual</td><td>207Q00000X</td><td>IL</td></tr>
+                  <tr><td>9876543210</td><td>James Wilson, DO</td><td>Individual</td><td>207R00000X</td><td>IL</td></tr>
+                  <tr><td>1122334455</td><td>Northside Health Alliance</td><td>Organization</td><td>261Q00000X</td><td>IL</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="view" id="view-reports">
+        <div class="section-card">
+          <h3><i class="fas fa-chart-pie"></i> Reports & Export Builder</h3>
+          <div class="subtitle">Build custom exports from all data sources</div>
+          <div class="report-stats">
+            <div class="report-stat"><div class="label">Total exports (30d)</div><div class="num">4,281</div><div class="trend"><i class="fas fa-arrow-up"></i> 12.4%</div></div>
+            <div class="report-stat"><div class="label">Records exported</div><div class="num">18.7M</div><div class="trend"><i class="fas fa-arrow-up"></i> 8.1%</div></div>
+            <div class="report-stat"><div class="label">Avg. export time</div><div class="num">1m 24s</div></div>
+          </div>
+          <div class="export-grid">
+            <div class="export-block"><h4><i class="fas fa-rocket"></i> Quick start</h4><div class="row-options"><span class="tag-option active">All-in-One</span><span class="tag-option">NPPES / CMS only</span><span class="tag-option">QPP results</span><span class="tag-option">Final Data only</span></div></div>
+            <div class="export-block"><h4><i class="fas fa-layer-group"></i> Scope</h4><div class="row-options"><span class="tag-option active">All NPIs</span><span class="tag-option">Filtered</span><span class="tag-option">Selected</span></div></div>
+            <div class="export-block"><h4><i class="fas fa-filter"></i> Filter</h4><div class="row-options"><span class="tag-option">QPP Eligible</span><span class="tag-option">Group = Yes</span><span class="tag-option">APM = Yes</span></div></div>
+            <div class="export-block"><h4><i class="fas fa-file-export"></i> Format</h4><div class="row-options"><span class="tag-option active">CSV</span><span class="tag-option">Excel</span><span class="tag-option">JSON</span></div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px;">
+            <button class="btn btn-primary" onclick="showToast('Export queued','success')"><i class="fas fa-download"></i> Generate export</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS (Updated to match screenshot) -->
+      <div class="view" id="view-analytics">
+        <div class="tiles">
+          <div class="tile">
+            <div class="tile-left"><h4>Total NPIs</h4><div class="value">9.74M</div><div class="sub">Full CMS</div></div>
+            <div class="tile-icon blue"><i class="fas fa-database"></i></div>
+          </div>
+          <div class="tile">
+            <div class="tile-left"><h4>Individuals</h4><div class="value">7.82M</div><div class="sub">80.3%</div></div>
+            <div class="tile-icon blue"><i class="fas fa-user"></i></div>
+          </div>
+          <div class="tile">
+            <div class="tile-left"><h4>Organizations</h4><div class="value">1.92M</div><div class="sub">19.7%</div></div>
+            <div class="tile-icon purple"><i class="fas fa-building"></i></div>
+          </div>
+          <div class="tile">
+            <div class="tile-left"><h4>Active</h4><div class="value" style="color:var(--success);">9.31M</div><div class="sub">95.6%</div></div>
+            <div class="tile-icon green"><i class="fas fa-check"></i></div>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <h3><i class="fas fa-chart-bar"></i> Taxonomy Distribution</h3>
+          <div class="subtitle">Top 10 medical specialties</div>
+          <div class="bar-chart">
+            <div class="bar" style="height:88%;"><span class="bar-value">780k</span><span class="bar-label">Family Med</span></div>
+            <div class="bar" style="height:72%;"><span class="bar-value">640k</span><span class="bar-label">Internal Med</span></div>
+            <div class="bar green" style="height:62%;"><span class="bar-value">550k</span><span class="bar-label">Nursing</span></div>
+            <div class="bar" style="height:48%;"><span class="bar-value">430k</span><span class="bar-label">Pediatrics</span></div>
+            <div class="bar orange" style="height:42%;"><span class="bar-value">380k</span><span class="bar-label">Psychiatry</span></div>
+            <div class="bar" style="height:38%;"><span class="bar-value">340k</span><span class="bar-label">Surgery</span></div>
+            <div class="bar purple" style="height:32%;"><span class="bar-value">290k</span><span class="bar-label">Cardiology</span></div>
+            <div class="bar" style="height:28%;"><span class="bar-value">250k</span><span class="bar-label">Dentistry</span></div>
+            <div class="bar" style="height:22%;"><span class="bar-value">200k</span><span class="bar-label">Pharmacy</span></div>
+            <div class="bar" style="height:18%;"><span class="bar-value">160k</span><span class="bar-label">Radiology</span></div>
+          </div>
+        </div>
+
+        <div class="charts-row-2">
+          <div class="chart-container">
+            <h3><i class="fas fa-building-columns"></i> Entity Type</h3>
+            <div class="subtitle">Individual vs Organization</div>
+            <div class="donut-chart">
+              <div class="donut" style="background: conic-gradient(var(--accent) 0deg 289deg, var(--purple) 289deg 360deg);">
+                <div class="donut-inner"><div class="num">9.74M</div><div class="lbl">total</div></div>
+              </div>
+              <div class="donut-legend">
+                <div class="legend-item"><span class="legend-dot" style="background: var(--accent);"></span> Individual <span class="val">7.82M</span></div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--purple);"></span> Organization <span class="val">1.92M</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <h3><i class="fas fa-percent"></i> Verification Coverage</h3>
+            <div class="subtitle">Progress toward 100%</div>
+            <div style="margin-top: 12px;">
+              <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;"><span>QPP verified</span><strong>43%</strong></div>
+              <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:43%;"></div></div>
+            </div>
+            <div style="margin-top: 16px;">
+              <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;"><span>NPPES verified</span><strong>32%</strong></div>
+              <div class="progress-bar" style="height:10px;"><div class="progress-fill green" style="width:32%;"></div></div>
+            </div>
+            <div style="margin-top: 16px;">
+              <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;"><span>Taxonomy mapped</span><strong>98%</strong></div>
+              <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:98%;"></div></div>
+            </div>
+            <div style="margin-top: 16px;">
+              <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;"><span>Endpoint linked</span><strong>61%</strong></div>
+              <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:61%; background: var(--purple);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT -->
+      <div class="view" id="view-audit">
+        <div class="section-card">
+          <h3><i class="fas fa-history"></i> Audit Log</h3>
+          <div id="auditList"></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="view" id="view-users">
+        <div class="tiles">
+          <div class="tile"><div class="tile-left"><h4>Total Users</h4><div class="value">24</div></div><div class="tile-icon blue"><i class="fas fa-users"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Admins</h4><div class="value" style="color:var(--danger);">3</div></div><div class="tile-icon red"><i class="fas fa-user-shield"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Operators</h4><div class="value" style="color:var(--info);">12</div></div><div class="tile-icon blue"><i class="fas fa-user-cog"></i></div></div>
+          <div class="tile"><div class="tile-left"><h4>Viewers</h4><div class="value" style="color:var(--success);">9</div></div><div class="tile-icon green"><i class="fas fa-eye"></i></div></div>
+        </div>
+        <div class="section-card">
+          <h3><i class="fas fa-user-shield"></i> Users & Roles</h3>
+          <div class="table-scroll"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last active</th></tr></thead><tbody>
+            <tr><td><strong>Admin User</strong></td><td>admin@npi-portal.com</td><td><span class="status-chip chip-admin">Admin</span></td><td><span class="status-chip chip-eligible">Active</span></td><td>Now</td></tr>
+            <tr><td>John Operator</td><td>john@npi-portal.com</td><td><span class="status-chip chip-operator">Operator</span></td><td><span class="status-chip chip-eligible">Active</span></td><td>2 min ago</td></tr>
+            <tr><td>Sarah Verifier</td><td>sarah@npi-portal.com</td><td><span class="status-chip chip-operator">Operator</span></td><td><span class="status-chip chip-eligible">Active</span></td><td>15 min ago</td></tr>
+            <tr><td>Mike Viewer</td><td>mike@npi-portal.com</td><td><span class="status-chip chip-viewer">Viewer</span></td><td><span class="status-chip chip-eligible">Active</span></td><td>1 hr ago</td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="view" id="view-settings">
+        <div class="section-card">
+          <h3><i class="fas fa-cog"></i> Portal Settings</h3>
+          <div class="import-options">
+            <div class="option-group"><label>Default performance year</label><select><option selected>2026</option><option>2025</option></select></div>
+            <div class="option-group"><label>Default batch size</label><select><option>100</option><option selected>500</option><option>1000</option></select></div>
+            <div class="option-group"><label>Auto-retry attempts</label><select><option>Off</option><option selected>3</option><option>5</option></select></div>
+            <div class="option-group"><label>Notifications</label><select><option selected>Email + in-app</option><option>In-app only</option></select></div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:16px;" onclick="showToast('Settings saved','success')"><i class="fas fa-save"></i> Save</button>
+        </div>
+      </div>
+
+      <!-- API -->
+      <div class="view" id="view-api">
+        <div class="section-card">
+          <h3><i class="fas fa-key"></i> API Keys</h3>
+          <div class="table-scroll"><table><thead><tr><th>Name</th><th>Key</th><th>Scope</th><th>Last used</th></tr></thead><tbody>
+            <tr><td><strong>Production</strong></td><td><code>npi_live_••••••••••4a2f</code></td><td><span class="status-chip chip-admin">Read + Write</span></td><td>2 min ago</td></tr>
+            <tr><td>Staging</td><td><code>npi_test_••••••••••9c1b</code></td><td><span class="status-chip chip-operator">Read + Write</span></td><td>1 hr ago</td></tr>
+            <tr><td>Analytics</td><td><code>npi_read_••••••••••2e8d</code></td><td><span class="status-chip chip-viewer">Read only</span></td><td>5 hr ago</td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+
+      <!-- WEBHOOKS -->
+      <div class="view" id="view-webhooks">
+        <div class="section-card">
+          <h3><i class="fas fa-webhook"></i> Webhooks</h3>
+          <div class="table-scroll"><table><thead><tr><th>Name</th><th>URL</th><th>Events</th><th>Status</th></tr></thead><tbody>
+            <tr><td><strong>Production Hook</strong></td><td><code>https://api.yourcompany.com/npi-events</code></td><td><span class="status-chip chip-eligible" style="font-size:10.5px;">verify.complete</span></td><td><span class="status-chip chip-eligible">Active</span></td></tr>
+            <tr><td>Slack Alerts</td><td><code>https://hooks.slack.com/services/T00/B00/XXX</code></td><td><span class="status-chip chip-queued" style="font-size:10.5px;">job.failed</span></td><td><span class="status-chip chip-eligible">Active</span></td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Command Palette -->
+<div class="command-palette-overlay" id="commandPalette" onclick="if(event.target.id==='commandPalette') closeCommandPalette()">
+  <div class="command-palette">
+    <div class="cmd-input-wrap"><i class="fas fa-search"></i><input type="text" class="cmd-input" id="cmdInput" placeholder="Search NPIs, providers, actions..." oninput="filterCommands(this.value)"></div>
+    <div class="cmd-results" id="cmdResults"></div>
+  </div>
+</div>
+
+<!-- Shortcuts -->
+<div class="shortcuts-modal" id="shortcutsModal" onclick="if(event.target.id==='shortcutsModal') closeShortcuts()">
+  <div class="shortcuts-content">
+    <h3><i class="fas fa-keyboard" style="color:var(--accent);"></i> Keyboard Shortcuts</h3>
+    <div class="shortcut-grid">
+      <div class="shortcut-item"><span>Command palette</span><kbd>⌘ K</kbd></div>
+      <div class="shortcut-item"><span>Toggle sidebar</span><kbd>⌘ B</kbd></div>
+      <div class="shortcut-item"><span>Shortcuts</span><kbd>⌘ /</kbd></div>
+      <div class="shortcut-item"><span>Toggle theme</span><kbd>⌘ ⇧ L</kbd></div>
+      <div class="shortcut-item"><span>Open AI Assistant</span><kbd>⌘ ⇧ A</kbd></div>
+      <div class="shortcut-item"><span>Run QPP</span><kbd>⌘ ⇧ Q</kbd></div>
+      <div class="shortcut-item"><span>Run NPPES</span><kbd>⌘ ⇧ N</kbd></div>
+      <div class="shortcut-item"><span>Close overlay</span><kbd>ESC</kbd></div>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header"><h4><i class="fas fa-bell"></i> Notifications</h4><span class="mark-read" onclick="markAllRead()">Mark all read</span></div>
+  <div class="notif-body" id="notifBody"></div>
+</div>
+
+<!-- AI Panel -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-header">
+    <h4><i class="fas fa-robot"></i> AI Assistant</h4>
+    <button class="close-btn" onclick="toggleAIPanel()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="ai-body" id="aiBody">
+    <div class="ai-message">
+      <div class="avatar-sm bot"><i class="fas fa-robot"></i></div>
+      <div class="bubble">Hi! I'm your NPI assistant. <strong>Type any 10-digit NPI</strong> to see its full details.<br><br>Try: <a href="#" onclick="askAI('1234567890');return false;" style="color:var(--accent);font-weight:600;">1234567890</a></div>
+    </div>
+  </div>
+  <div class="ai-suggestions" id="aiSuggestions">
+    <div class="ai-suggestion" onclick="askAI('1234567890')"><i class="fas fa-search"></i> Look up NPI 1234567890</div>
+    <div class="ai-suggestion" onclick="askAI('How many NPIs are QPP eligible?')"><i class="fas fa-question-circle"></i> How many are QPP eligible?</div>
+    <div class="ai-suggestion" onclick="askAI('Show me all providers with errors')"><i class="fas fa-exclamation-triangle"></i> Show providers with errors</div>
+    <div class="ai-suggestion" onclick="askAI('List all providers')"><i class="fas fa-list"></i> List all providers</div>
+  </div>
+  <div class="ai-input-wrap">
+    <input type="text" id="aiInput" placeholder="Type NPI number or ask..." onkeypress="if(event.key==='Enter') sendAIMessage()">
+    <button class="send-btn" onclick="sendAIMessage()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- NPI Side Card -->
+<div class="overlay" id="overlay" onclick="closeCard()"></div>
+<div class="side-card" id="sideCard">
+  <div class="side-card-header">
+    <h3><i class="fas fa-id-card"></i> NPI Card</h3>
+    <div class="header-tools">
+      <button class="tool-btn" onclick="showToast('NPI copied','success')"><i class="fas fa-copy"></i></button>
+      <button class="tool-btn" onclick="showToast('Printing...','info')"><i class="fas fa-print"></i></button>
+      <button class="side-card-close" onclick="closeCard()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="side-card-body">
+    <div class="card-top-section" id="cardTopSection"></div>
+    <div class="card-tabs-wrap"><div class="card-tabs" id="cardTabs"></div></div>
+    <div class="card-content" id="cardContent"></div>
+  </div>
+</div>
+
+<!-- Verify Modal -->
+<div class="modal-overlay" id="verifyModal">
+  <div class="modal">
+    <h3 id="modalTitle"><i class="fas fa-bolt"></i> Run Job</h3>
+    <p id="modalDesc">Configure this job.</p>
+    <div class="modal-form">
+      <div><label>Job Type</label><select id="modalJobType"><option value="qpp">QPP Verification</option><option value="nppes">NPPES Verification</option></select></div>
+      <div><label>Scope</label><select id="modalScope"><option value="unverified">All unverified</option><option value="selected">Selected NPIs</option><option value="all">All</option></select></div>
+      <div><label>Batch Size</label><select id="modalBatch"><option value="500" selected>500 NPIs/batch</option><option value="100">100</option><option value="1000">1,000</option></select></div>
+      <div><label>Number of Batches</label><select id="modalNumBatches"><option value="1">1</option><option value="2" selected>2</option><option value="5">5</option><option value="10">10</option></select></div>
+      <div><label>Speed</label><select id="modalSpeed"><option value="25" selected>Normal</option><option value="50">Fast</option><option value="100">Turbo</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeVerifyModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="createJob()"><i class="fas fa-play"></i> Create & Start</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk bar -->
+<div class="bulk-bar" id="bulkBar">
+  <span><strong class="count" id="selectedCount">0</strong> selected</span>
+  <div class="divider"></div>
+  <button class="btn btn-qpp" onclick="bulkStart('qpp')"><i class="fas fa-bolt"></i> QPP Job</button>
+  <button class="btn btn-nppes" onclick="bulkStart('nppes')"><i class="fas fa-id-card"></i> NPPES Job</button>
+  <div class="divider"></div>
+  <button class="btn btn-outline" onclick="clearSelection()"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- Jobs panel -->
+<div class="jobs-panel minimized" id="jobsPanel">
+  <div class="jobs-header" onclick="toggleJobsPanel()">
+    <h4><i class="fas fa-spinner fa-pulse"></i> Active Jobs</h4>
+    <span class="count-badge" id="activeJobCount">0</span>
+  </div>
+  <div class="jobs-body" id="jobsBody"></div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   NPI PORTAL — UNIFIED v22
+   ============================================================ */
+
+/* ============ PROVIDER DATA (rich v12 model) ============ */
+const PROVIDERS = [
+  { npi:'1234567890', name:'Dr. Sarah Chen, MD', facility:'Mercy General Hospital', status:'eligible', statusLabel:'Eligible', group:'Yes', apm:'No', vg:'Yes', nppes:'verified', entityType:'Individual', enumerationDate:'2018-03-12', lastUpdate:'2025-11-04', sex:'Female', ein:'**-***1234',
+    legalName:{first:'Sarah',last:'Chen',middle:'Marie',prefix:'Dr.',suffix:null,credential:'MD'},
+    mailingAddress:{line1:'123 Main Street',line2:'Suite 400',city:'Springfield',state:'IL',zip:'62704',country:'US',phone:'(217) 555-0142',fax:'(217) 555-0143'},
+    practiceAddress:{line1:'456 Health Avenue',line2:'Floor 3',city:'Springfield',state:'IL',zip:'62701',country:'US',phone:'(217) 555-0200',fax:'(217) 555-0201'},
+    secondaryAddresses:[{line1:'789 Care Boulevard',line2:'Suite 12',city:'Chicago',state:'IL',zip:'60601',country:'US',phone:'(312) 555-0100',type:'Secondary Practice'}],
+    authorizedOfficial:{first:'Sarah',last:'Chen',middle:'M',title:'Owner / Physician',phone:'(217) 555-0142',prefix:'Dr.',suffix:null,credential:'MD'},
+    taxonomy:[{code:'207Q00000X',desc:'Family Medicine',license:'IL-036-123456',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'},{code:'207QS0010X',desc:'Sports Medicine',license:'IL-036-123456',licenseState:'IL',primary:false,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL1234567',type:'State License',state:'IL',issuer:'Illinois Medical Board'},{id:'MEDICARE-A8B2',type:'Medicare PIN',state:'IL',issuer:'CMS'}],
+    endpoints:[{type:'Direct Messaging',url:'https://direct.mercygeneral.org/chen',use:'Treatment',affiliation:'Mercy General Hospital',status:'Active'},{type:'FHIR R4',url:'https://fhir.mercygeneral.org/r4/practitioner/1234567890',use:'Treatment + Operations',affiliation:'Mercy General Hospital',status:'Active'}],
+    qppYears:[{year:2026,eligible:true,group:'Yes',apm:'No',vg:'Yes',checked:'2026-10-12',attempts:2,status:'Verified'},{year:2025,eligible:true,group:'Yes',apm:'No',vg:'Yes',checked:'2025-10-15',attempts:1,status:'Verified'}],
+    notes:[{author:'Admin',date:'2026-10-12 14:30',body:'Contacted provider for updated taxonomy information.'}],
+    history:[{date:'2026-10-12 14:22',action:'QPP verified — Eligible (2026)',type:'success'},{date:'2026-10-10 09:15',action:'NPPES registry refreshed',type:'success'}],
+    audit:[{user:'Admin (AD)',action:'Exported all-in-one record (CSV)',date:'2026-10-13 11:42'}]
+  },
+  { npi:'9876543210', name:'James Wilson, DO', facility:'Lakeside Medical Group', status:'not-eligible', statusLabel:'Not Eligible', group:'No', apm:'No', vg:'No', nppes:'not-verified', entityType:'Individual', enumerationDate:'2015-06-22', lastUpdate:'2024-08-19', sex:'Male', ein:'**-***5678',
+    legalName:{first:'James',last:'Wilson',middle:'Robert',prefix:'Dr.',suffix:'DO',credential:'DO'},
+    mailingAddress:{line1:'500 Lake Shore Drive',line2:'Apt 12B',city:'Chicago',state:'IL',zip:'60611',country:'US',phone:'(312) 555-0300',fax:null},
+    practiceAddress:{line1:'800 Lakeside Avenue',line2:'Suite 200',city:'Chicago',state:'IL',zip:'60610',country:'US',phone:'(312) 555-0400',fax:'(312) 555-0401'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Karen',last:'Wilson',middle:'A',title:'Practice Manager',phone:'(312) 555-0400',prefix:null,suffix:null,credential:null},
+    taxonomy:[{code:'207R00000X',desc:'Internal Medicine',license:'IL-036-234567',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL2345678',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[{type:'Direct Messaging',url:'https://direct.lakesidemedical.com/wilson',use:'Treatment',affiliation:'Lakeside Medical Group',status:'Active'}],
+    qppYears:[{year:2026,eligible:false,group:'No',apm:'No',vg:'No',checked:'2026-10-12',attempts:1,status:'Verified'}],
+    notes:[], history:[{date:'2026-10-12 14:22',action:'QPP verified — Not Eligible',type:'error'}],
+    audit:[{user:'Operator (OP)',action:'Verified QPP 2026',date:'2026-10-12 14:22'}]
+  },
+  { npi:'1122334455', name:'Northside Health Alliance', facility:'Northside Health Alliance', status:'queued', statusLabel:'Queued', group:'—', apm:'—', vg:'—', nppes:'not-verified', entityType:'Organization', enumerationDate:'2012-01-15', lastUpdate:'2025-09-30', sex:null, ein:'**-***3456',
+    legalName:{org:'Northside Health Alliance'},
+    mailingAddress:{line1:'1000 Northside Blvd',line2:'Building A',city:'Evanston',state:'IL',zip:'60201',country:'US',phone:'(847) 555-0100',fax:'(847) 555-0101'},
+    practiceAddress:{line1:'1000 Northside Blvd',line2:'Building A',city:'Evanston',state:'IL',zip:'60201',country:'US',phone:'(847) 555-0100',fax:'(847) 555-0101'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Michael',last:'Thompson',middle:'J',title:'CEO',phone:'(847) 555-0100',prefix:'Mr.',suffix:null,credential:null},
+    taxonomy:[{code:'261Q00000X',desc:'Clinic/Center',license:'IL-CLINIC-4455',licenseState:'IL',primary:true,group:'Ambulatory Health Care Facilities'}],
+    identifiers:[{id:'IL-ORG-4455',type:'State License',state:'IL',issuer:'Illinois Dept of Health'}],
+    endpoints:[], qppYears:[], notes:[],
+    history:[{date:'2026-10-13 08:45',action:'QPP verification queued',type:'info'}],
+    audit:[{user:'Admin (AD)',action:'Queued QPP verification',date:'2026-10-13 08:45'}]
+  },
+  { npi:'5544332211', name:'Maria Rodriguez, NP', facility:'Sunrise Family Clinic', status:'verifying', statusLabel:'Verifying', group:'—', apm:'—', vg:'—', nppes:'fetching', entityType:'Individual', enumerationDate:'2020-05-10', lastUpdate:'2025-07-22', sex:'Female', ein:'**-***7890',
+    legalName:{first:'Maria',last:'Rodriguez',middle:'Elena',prefix:null,suffix:'NP',credential:'NP'},
+    mailingAddress:{line1:'250 Sunrise Lane',line2:'',city:'Oak Park',state:'IL',zip:'60301',country:'US',phone:'(708) 555-0150',fax:null},
+    practiceAddress:{line1:'300 Sunrise Boulevard',line2:'Suite 100',city:'Oak Park',state:'IL',zip:'60301',country:'US',phone:'(708) 555-0160',fax:'(708) 555-0161'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Maria',last:'Rodriguez',middle:'E',title:'Owner',phone:'(708) 555-0150',prefix:null,suffix:'NP',credential:'NP'},
+    taxonomy:[{code:'363LF0000X',desc:'Family Nurse Practitioner',license:'IL-NP-556677',licenseState:'IL',primary:true,group:'Nursing Service Providers'}],
+    identifiers:[{id:'IL-NP-556677',type:'State License',state:'IL',issuer:'Illinois Nursing Board'}],
+    endpoints:[{type:'Direct Messaging',url:'https://direct.sunrisefamily.org/rodriguez',use:'Treatment',affiliation:'Sunrise Family Clinic',status:'Active'}],
+    qppYears:[], notes:[],
+    history:[{date:'2026-10-13 09:15',action:'QPP verification started',type:'info'}],
+    audit:[{user:'Operator (OP)',action:'Started QPP + NPPES verification',date:'2026-10-13 09:15'}]
+  },
+  { npi:'6677889900', name:'Dr. Robert Kim', facility:'Advanced Orthopedics', status:'notverified', statusLabel:'Not verified', group:'—', apm:'—', vg:'—', nppes:'not-verified', entityType:'Individual', enumerationDate:'2016-11-08', lastUpdate:'2025-06-14', sex:'Male', ein:'**-***2345',
+    legalName:{first:'Robert',last:'Kim',middle:'David',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    mailingAddress:{line1:'45 Oak Street',line2:'Unit 12',city:'Peoria',state:'IL',zip:'61602',country:'US',phone:'(309) 555-0110',fax:null},
+    practiceAddress:{line1:'600 Orthopedic Way',line2:'Suite 500',city:'Peoria',state:'IL',zip:'61602',country:'US',phone:'(309) 555-0120',fax:'(309) 555-0121'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Robert',last:'Kim',middle:'D',title:'Owner',phone:'(309) 555-0110',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'207X00000X',desc:'Orthopaedic Surgery',license:'IL-036-778899',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL-036-778899',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[], qppYears:[], notes:[],
+    history:[{date:'2026-10-01 08:00',action:'Record created from CMS bulk import',type:'info'}],
+    audit:[{user:'System',action:'Imported from CMS bulk file',date:'2026-10-01 08:00'}]
+  },
+  { npi:'2233445566', name:'Green Valley Clinic', facility:'Green Valley Clinic', status:'eligible', statusLabel:'Eligible', group:'Yes', apm:'Yes', vg:'No', nppes:'verified', entityType:'Organization', enumerationDate:'2010-09-20', lastUpdate:'2025-10-01', sex:null, ein:'**-***6789',
+    legalName:{org:'Green Valley Clinic LLC'},
+    mailingAddress:{line1:'PO Box 500',line2:'',city:'Springfield',state:'IL',zip:'62705',country:'US',phone:'(217) 555-0500',fax:'(217) 555-0501'},
+    practiceAddress:{line1:'100 Green Valley Road',line2:'Suite 1',city:'Springfield',state:'IL',zip:'62704',country:'US',phone:'(217) 555-0510',fax:'(217) 555-0511'},
+    secondaryAddresses:[{line1:'250 Valley View Drive',line2:'',city:'Chatham',state:'IL',zip:'62629',country:'US',phone:'(217) 555-0520',type:'Satellite Clinic'}],
+    authorizedOfficial:{first:'Elizabeth',last:'Green',middle:'A',title:'Managing Partner',phone:'(217) 555-0510',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'261QP2300X',desc:'Primary Care Clinic',license:'IL-CLINIC-2233',licenseState:'IL',primary:true,group:'Ambulatory Health Care Facilities'}],
+    identifiers:[{id:'IL-CLINIC-2233',type:'State License',state:'IL',issuer:'Illinois Dept of Health'}],
+    endpoints:[{type:'FHIR R4',url:'https://fhir.greenvalleyclinic.org/r4/organization/2233445566',use:'Treatment + Operations',affiliation:'Green Valley Clinic',status:'Active'}],
+    qppYears:[{year:2026,eligible:true,group:'Yes',apm:'Yes',vg:'No',checked:'2026-10-12',attempts:1,status:'Verified'}],
+    notes:[], history:[{date:'2026-10-12 14:30',action:'QPP verified — Eligible with APM',type:'success'}],
+    audit:[{user:'Admin (AD)',action:'Verified QPP status',date:'2026-10-12 14:30'}]
+  },
+  { npi:'8899001122', name:'Patricia Adams, MD', facility:"Women's Health Partners", status:'error', statusLabel:'Error / Retry', group:'—', apm:'—', vg:'—', nppes:'error', entityType:'Individual', enumerationDate:'2014-02-28', lastUpdate:'2025-05-10', sex:'Female', ein:'**-***8901',
+    legalName:{first:'Patricia',last:'Adams',middle:'Lynn',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    mailingAddress:{line1:'88 Womens Way',line2:'Suite 5',city:'Naperville',state:'IL',zip:'60540',country:'US',phone:'(630) 555-0190',fax:null},
+    practiceAddress:{line1:'88 Womens Way',line2:'Suite 5',city:'Naperville',state:'IL',zip:'60540',country:'US',phone:'(630) 555-0190',fax:'(630) 555-0191'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Patricia',last:'Adams',middle:'L',title:'President',phone:'(630) 555-0190',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'207V00000X',desc:'Obstetrics & Gynecology',license:'IL-036-889900',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL-036-889900',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[], qppYears:[], notes:[],
+    history:[{date:'2026-10-12 14:22',action:'QPP verification failed — timeout',type:'error'}],
+    audit:[{user:'System',action:'QPP verification failed',date:'2026-10-12 14:22'}]
+  },
+  { npi:'3344556677', name:'Dr. Michael Torres', facility:'City Medical Center', status:'eligible', statusLabel:'Eligible', group:'Yes', apm:'No', vg:'Yes', nppes:'verified', entityType:'Individual', enumerationDate:'2017-07-19', lastUpdate:'2025-09-12', sex:'Male', ein:'**-***3344',
+    legalName:{first:'Michael',last:'Torres',middle:'Anthony',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    mailingAddress:{line1:'700 City Center Drive',line2:'Apt 4A',city:'Chicago',state:'IL',zip:'60654',country:'US',phone:'(312) 555-0700',fax:null},
+    practiceAddress:{line1:'900 Medical Plaza',line2:'Suite 800',city:'Chicago',state:'IL',zip:'60611',country:'US',phone:'(312) 555-0800',fax:'(312) 555-0801'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Michael',last:'Torres',middle:'A',title:'Self',phone:'(312) 555-0700',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'207P00000X',desc:'Emergency Medicine',license:'IL-036-445566',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL-036-445566',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[{type:'Direct Messaging',url:'https://direct.citymedical.org/torres',use:'Treatment',affiliation:'City Medical Center',status:'Active'}],
+    qppYears:[{year:2026,eligible:true,group:'Yes',apm:'No',vg:'Yes',checked:'2026-10-12',attempts:1,status:'Verified'}],
+    notes:[], history:[{date:'2026-10-12 15:00',action:'QPP verified — Eligible',type:'success'}],
+    audit:[{user:'Operator (OP)',action:'Verified QPP 2026',date:'2026-10-12 15:00'}]
+  },
+  { npi:'7788990011', name:'Linda Park, FNP', facility:'Community Health Network', status:'not-eligible', statusLabel:'Not Eligible', group:'No', apm:'No', vg:'No', nppes:'not-verified', entityType:'Individual', enumerationDate:'2019-10-05', lastUpdate:'2025-08-20', sex:'Female', ein:'**-***5566',
+    legalName:{first:'Linda',last:'Park',middle:'S',prefix:null,suffix:'FNP',credential:'FNP'},
+    mailingAddress:{line1:'400 Community Way',line2:'',city:'Rockford',state:'IL',zip:'61101',country:'US',phone:'(815) 555-0230',fax:null},
+    practiceAddress:{line1:'500 Health Center Drive',line2:'Suite 2',city:'Rockford',state:'IL',zip:'61101',country:'US',phone:'(815) 555-0240',fax:'(815) 555-0241'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Linda',last:'Park',middle:'S',title:'Nurse Practitioner',phone:'(815) 555-0230',prefix:null,suffix:'FNP',credential:'FNP'},
+    taxonomy:[{code:'363LF0000X',desc:'Family Nurse Practitioner',license:'IL-NP-778899',licenseState:'IL',primary:true,group:'Nursing Service Providers'}],
+    identifiers:[{id:'IL-NP-778899',type:'State License',state:'IL',issuer:'Illinois Nursing Board'}],
+    endpoints:[],
+    qppYears:[{year:2026,eligible:false,group:'No',apm:'No',vg:'No',checked:'2026-10-11',attempts:1,status:'Verified'}],
+    notes:[], history:[{date:'2026-10-11 11:00',action:'QPP verified — Not Eligible',type:'error'}],
+    audit:[{user:'Operator (OP)',action:'Verified QPP 2026',date:'2026-10-11 11:00'}]
+  },
+  { npi:'4455667788', name:'Dr. Ahmed Hassan', facility:'Riverside Clinic', status:'queued', statusLabel:'Queued', group:'—', apm:'—', vg:'—', nppes:'not-verified', entityType:'Individual', enumerationDate:'2013-04-18', lastUpdate:'2025-07-01', sex:'Male', ein:'**-***9911',
+    legalName:{first:'Ahmed',last:'Hassan',middle:'M',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    mailingAddress:{line1:'150 Riverside Drive',line2:'',city:'Elgin',state:'IL',zip:'60120',country:'US',phone:'(847) 555-0300',fax:null},
+    practiceAddress:{line1:'200 Riverside Plaza',line2:'Suite 400',city:'Elgin',state:'IL',zip:'60120',country:'US',phone:'(847) 555-0310',fax:'(847) 555-0311'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Ahmed',last:'Hassan',middle:'M',title:'Self',phone:'(847) 555-0300',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'208000000X',desc:'Pediatrics',license:'IL-036-556677',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL-036-556677',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[], qppYears:[], notes:[],
+    history:[{date:'2026-10-13 08:45',action:'QPP verification queued',type:'info'}],
+    audit:[{user:'Admin (AD)',action:'Queued QPP verification',date:'2026-10-13 08:45'}]
+  },
+  { npi:'9900112233', name:'Karen White, MD', facility:'Lakeshore Pediatrics', status:'verifying', statusLabel:'Verifying', group:'—', apm:'—', vg:'—', nppes:'fetching', entityType:'Individual', enumerationDate:'2021-08-30', lastUpdate:'2025-10-05', sex:'Female', ein:'**-***4433',
+    legalName:{first:'Karen',last:'White',middle:'Elizabeth',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    mailingAddress:{line1:'90 Lakeshore Drive',line2:'Unit 22',city:'Chicago',state:'IL',zip:'60611',country:'US',phone:'(312) 555-0900',fax:null},
+    practiceAddress:{line1:'95 Lakeshore Medical Plaza',line2:'Suite 100',city:'Chicago',state:'IL',zip:'60611',country:'US',phone:'(312) 555-0910',fax:'(312) 555-0911'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'Karen',last:'White',middle:'E',title:'Self',phone:'(312) 555-0900',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'208000000X',desc:'Pediatrics',license:'IL-036-990011',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL-036-990011',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[], qppYears:[], notes:[],
+    history:[{date:'2026-10-13 09:15',action:'QPP verification started',type:'info'}],
+    audit:[{user:'Operator (OP)',action:'Started QPP verification',date:'2026-10-13 09:15'}]
+  },
+  { npi:'5566778899', name:'Dr. David Lee', facility:'Summit Surgical Center', status:'eligible', statusLabel:'Eligible', group:'Yes', apm:'Yes', vg:'Yes', nppes:'verified', entityType:'Individual', enumerationDate:'2011-12-12', lastUpdate:'2025-10-08', sex:'Male', ein:'**-***7788',
+    legalName:{first:'David',last:'Lee',middle:'Christopher',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    mailingAddress:{line1:'500 Summit Avenue',line2:'',city:'Chicago',state:'IL',zip:'60625',country:'US',phone:'(773) 555-0400',fax:null},
+    practiceAddress:{line1:'600 Surgical Plaza',line2:'Suite 600',city:'Chicago',state:'IL',zip:'60625',country:'US',phone:'(773) 555-0410',fax:'(773) 555-0411'},
+    secondaryAddresses:[],
+    authorizedOfficial:{first:'David',last:'Lee',middle:'C',title:'Owner',phone:'(773) 555-0400',prefix:'Dr.',suffix:'MD',credential:'MD'},
+    taxonomy:[{code:'208600000X',desc:'Surgery',license:'IL-036-556677',licenseState:'IL',primary:true,group:'Allopathic & Osteopathic Physicians'}],
+    identifiers:[{id:'IL-036-556677',type:'State License',state:'IL',issuer:'Illinois Medical Board'}],
+    endpoints:[{type:'Direct Messaging',url:'https://direct.summitsurgical.org/lee',use:'Treatment',affiliation:'Summit Surgical Center',status:'Active'}],
+    qppYears:[{year:2026,eligible:true,group:'Yes',apm:'Yes',vg:'Yes',checked:'2026-10-12',attempts:1,status:'Verified'}],
+    notes:[], history:[{date:'2026-10-12 15:15',action:'QPP verified — Eligible with APM + VG',type:'success'}],
+    audit:[{user:'Admin (AD)',action:'Verified QPP 2026',date:'2026-10-12 15:15'}]
+  }
+];
+
+/* ============ NPI POOL for batches ============ */
+const FIRST_NAMES=['Sarah','James','Michael','Patricia','Robert','Linda','David','Maria','Ahmed','Karen','Daniel','Jennifer','Christopher','Lisa','Mark','Nancy','Paul','Betty','Steven','Sandra'];
+const LAST_NAMES=['Chen','Wilson','Torres','Adams','Kim','Park','Lee','Rodriguez','Hassan','White','Martinez','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Thompson','Garcia','Robinson'];
+const FACILITIES=['Mercy General Hospital','Lakeside Medical Group','Sunrise Family Clinic','Advanced Orthopedics','Green Valley Clinic',"Women's Health Partners",'City Medical Center','Community Health Network','Riverside Clinic','Lakeshore Pediatrics','Summit Surgical Center','Northside Health Alliance'];
+const STATES=['IL','CA','TX','NY','FL','PA','OH','MI','GA','NC'];
+const CITIES=['Springfield','Chicago','Evanston','Peoria','Oak Park','Rockford','Elgin','Naperville','Aurora','Joliet'];
+const TAXONOMIES=[{code:'207Q00000X',desc:'Family Medicine'},{code:'207R00000X',desc:'Internal Medicine'},{code:'207X00000X',desc:'Orthopaedic Surgery'},{code:'207V00000X',desc:'Obstetrics & Gynecology'},{code:'207P00000X',desc:'Emergency Medicine'},{code:'208000000X',desc:'Pediatrics'},{code:'208600000X',desc:'Surgery'},{code:'363LF0000X',desc:'Family Nurse Practitioner'},{code:'261QP2300X',desc:'Primary Care Clinic'},{code:'261Q00000X',desc:'Clinic/Center'}];
+const CREDENTIALS=['MD','DO','NP','FNP'];
+
+function generateNPIPool(count){
+  const pool=[];
+  for(let i=0;i<count;i++){
+    const fn=FIRST_NAMES[i%FIRST_NAMES.length];
+    const ln=LAST_NAMES[(i*7)%LAST_NAMES.length];
+    const cred=CREDENTIALS[i%CREDENTIALS.length];
+    const isOrg=i%11===0;
+    const tax=TAXONOMIES[i%TAXONOMIES.length];
+    const city=CITIES[i%CITIES.length];
+    const state=STATES[i%STATES.length];
+    const npi=String(1000000000+i*3571);
+    const eligible=(i*3)%5!==0;
+    pool.push({
+      npi, name:isOrg?`${ln} Medical Group`:`Dr. ${fn} ${ln}, ${cred}`,
+      facility:isOrg?`${ln} Medical Group`:FACILITIES[i%FACILITIES.length],
+      entityType:isOrg?'Organization':'Individual',
+      enumerationDate:`20${15+(i%10)}-${String((i%12)+1).padStart(2,'0')}-${String((i%28)+1).padStart(2,'0')}`,
+      lastUpdate:`2025-${String((i%12)+1).padStart(2,'0')}-${String((i%28)+1).padStart(2,'0')}`,
+      sex:isOrg?null:(i%2===0?'Female':'Male'),
+      ein:isOrg?`**-***${1000+i}`:`**-***${2000+i}`,
+      legalName:isOrg?{org:`${ln} Medical Group`}:{first:fn,last:ln,prefix:'Dr.',credential:cred},
+      practiceAddress:{line1:`${100+i} ${['Main','Oak','Health','Care','Park'][i%5]} ${['Street','Avenue','Boulevard','Way'][i%4]}`,line2:i%3===0?`Suite ${100+i}`:'',city,state,zip:`${60000+i*7}`,country:'US',phone:`(${200+(i%700)}) 555-${String(1000+i).slice(-4)}`},
+      mailingAddress:{line1:`PO Box ${5000+i}`,city,state,zip:`${60000+i*7}`,country:'US',phone:`(${200+(i%700)}) 555-${String(1000+i).slice(-4)}`},
+      taxonomy:[{code:tax.code,desc:tax.desc,primary:true,license:`IL-${String(100000+i)}`,licenseState:state}],
+      identifiers:[{id:`STATE-${1000+i}`,type:'State License',state,issuer:`${state} Medical Board`}],
+      endpoints:i%2===0?[{type:'Direct Messaging',url:`https://direct.example${i}.org`,use:'Treatment'}]:[],
+      qppStatus:eligible?'eligible':'not-eligible',
+      qppGroup:eligible&&i%3===0?'Yes':'No',
+      qppApm:eligible&&i%5===0?'Yes':'No',
+      qppVg:eligible&&i%4===0?'Yes':'No',
+      nppesStatus:i%4===0?'error':'verified'
+    });
+  }
+  return pool;
+}
+
+const NPI_POOL = generateNPIPool(40000);
+
+/* ============ STATE ============ */
+const state = {
+  theme:'light',
+  currentView:'providers',
+  currentFilter:'all',
+  currentSearch:'',
+  selected:new Set(),
+  currentNpi:null,
+  activeTab:'allinone',
+  currentBatchTab:'qpp',
+  currentFinalFilter:'all',
+  qppBatches:[],
+  nppesBatches:[],
+  finalBatchGroups:[],
+  notifications:[],
+  auditLog:[],
+  batchCounter:{qpp:0,nppes:0},
+  jobsMinimized:true,
+  notifPanelOpen:false,
+  aiPanelOpen:false,
+  selectedCmdIndex:0,
+  filteredCommands:[],
+  masterPool:NPI_POOL
+};
+
+/* ============ UTILITIES ============ */
+function formatDuration(s){if(s<60)return Math.round(s)+'s';const m=Math.floor(s/60),x=Math.round(s%60);if(m<60)return m+'m '+x+'s';const h=Math.floor(m/60),mm=m%60;if(h<24)return h+'h '+mm+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
+function timeAgo(t){const s=Math.floor((Date.now()-t)/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+function escapeHtml(text){const d=document.createElement('div');d.textContent=text;return d.innerHTML;}
+function addAuditLog(a,tags=[]){state.auditLog.unshift({user:'AD',action:a,meta:tags,timestamp:Date.now()});if(state.auditLog.length>60)state.auditLog.pop();renderAuditLog();}
+function addNotification(t,b,type='blue',action=null){const n={id:Date.now()+Math.random(),title:t,body:b,type,unread:true,timestamp:Date.now(),action};state.notifications.unshift(n);if(state.notifications.length>25)state.notifications.pop();renderNotifications();updateNotifDot();}
+
+/* ============ BATCH CONFIG & DATA ============ */
+function getConfig(type){return type==='qpp'?{batchSize:500,speed:25,startTime:'22:00',endTime:'02:00',slotLabel:'22:00 - 02:00'}:{batchSize:500,speed:25,startTime:'02:00',endTime:'06:00',slotLabel:'02:00 - 06:00'};}
+
+function generateInitialBatches(){
+  for(let i=1;i<=40;i++){
+    createBatch('qpp',i,i<=27?'done':(i===28?'running':(i<=35?'queued':(i<=37?'failed':'paused'))));
+    createBatch('nppes',i,i<=27?'done':(i===28?'running':(i<=35?'queued':(i<=37?'failed':'paused'))));
+  }
+}
+
+function createBatch(type,index,batchStatus){
+  const config=getConfig(type);
+  const startIdx=(index-1)*config.batchSize;
+  const endIdx=startIdx+config.batchSize;
+  const batchNpis=state.masterPool.slice(startIdx,endIdx);
+  const totalSecs=config.batchSize/config.speed;
+  const progress=batchStatus==='done'?100:batchStatus==='running'?Math.floor(Math.random()*60)+20:batchStatus==='failed'?Math.floor(Math.random()*40)+10:batchStatus==='paused'?Math.floor(Math.random()*50)+20:0;
+  const remainingSecs=totalSecs*(1-progress/100);
+  let estComplete='—';
+  if(batchStatus==='done'){const d=new Date(Date.now()-Math.random()*3600000*3);estComplete=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+  else if(batchStatus==='running'){const d=new Date(Date.now()+remainingSecs*1000);estComplete=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+  const batchId=`${type.toUpperCase()}-BATCH-${String(index).padStart(4,'0')}`;
+  const jobId=`JOB-${type.toUpperCase()}-${5000+index}`;
+  const completedAt=batchStatus==='done'?new Date(Date.now()-(index*300000)):null;
+  const batch={id:batchId,type,jobId,startNpi:startIdx+1,endNpi:endIdx,count:config.batchSize,status:batchStatus,progress,eta:batchStatus==='running'?formatDuration(remainingSecs):batchStatus==='queued'?'~ pending':batchStatus==='failed'?'Retry':batchStatus==='paused'?formatDuration(remainingSecs)+' (paused)':'—',estComplete,npis:batchNpis,timeSlot:config.slotLabel,totalSecs,completedAt};
+  if(type==='qpp')state.qppBatches.push(batch);else state.nppesBatches.push(batch);
+  state.batchCounter[type]=Math.max(state.batchCounter[type],index);
+  if(batchStatus==='done'&&completedAt)moveBatchToFinal(batch);
+  return batch;
+}
+
+/* ============ FINAL DATA — batch → group ============ */
+function moveBatchToFinal(batch){
+  if(batch.movedToFinal)return;
+  batch.movedToFinal=true;
+  const verifiedNpis=batch.npis.map(npi=>{
+    const v={...npi};
+    if(batch.type==='qpp'){
+      v.qppResult={eligible:npi.qppStatus==='eligible',group:npi.qppGroup,apm:npi.qppApm,vg:npi.qppVg,year:'2026',verifiedAt:batch.completedAt||new Date(),fromBatch:batch.id};
+    }else{
+      v.nppesResult={taxonomy:npi.taxonomy[0].desc,taxonomyCode:npi.taxonomy[0].code,practiceAddress:npi.practiceAddress,mailingAddress:npi.mailingAddress,identifiers:npi.identifiers,endpoints:npi.endpoints,verifiedAt:batch.completedAt||new Date(),fromBatch:batch.id};
+    }
+    return v;
+  });
+  state.finalBatchGroups.push({batchId:batch.id,type:batch.type,npiCount:batch.count,completedAt:batch.completedAt||new Date(),npis:verifiedNpis});
+  addAuditLog(`${batch.id} (${batch.type.toUpperCase()}) → ${batch.count} NPIs moved to Final Data`,['Batch','Final']);
+  addNotification(`📦 ${batch.type.toUpperCase()} batch complete`,`${batch.id} · ${batch.count} NPIs moved to Final Data`,batch.type==='qpp'?'blue':'purple');
+}
+
+/* ============ RENDER — BATCH TABLE (UPDATED TO MATCH SCREENSHOT) ============ */
+function switchBatchTab(tab,el){
+  state.currentBatchTab=tab;
+  document.querySelectorAll('.bm-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderBatchTable();
+}
+function getVisibleBatches(){
+  if(state.currentBatchTab==='qpp')return state.qppBatches;
+  if(state.currentBatchTab==='nppes')return state.nppesBatches;
+  return [...state.qppBatches,...state.nppesBatches];
+}
+function renderBatchTable(){
+  const tbody=document.getElementById('batchTableBody');if(!tbody)return;
+  const data=getVisibleBatches();
+  const el=id=>document.getElementById(id);
+  if(el('tabQppCount'))el('tabQppCount').textContent=state.qppBatches.length;
+  if(el('tabNppesCount'))el('tabNppesCount').textContent=state.nppesBatches.length;
+  if(el('tabAllCount'))el('tabAllCount').textContent=state.qppBatches.length+state.nppesBatches.length;
+  if(el('bmTotal'))el('bmTotal').textContent=data.length;
+  if(el('bmRunning'))el('bmRunning').textContent=data.filter(b=>b.status==='running').length;
+  if(el('bmDone'))el('bmDone').textContent=data.filter(b=>b.status==='done').length;
+  if(el('bmQueued'))el('bmQueued').textContent=data.filter(b=>b.status==='queued').length;
+  if(el('bmFailed'))el('bmFailed').textContent=data.filter(b=>b.status==='failed').length;
+  if(el('bmPaused'))el('bmPaused').textContent=data.filter(b=>b.status==='paused').length;
+  
+  // Exact styling from screenshot
+  const chipMap={running:'chip-running',done:'chip-completed',queued:'chip-queued',failed:'chip-failed',paused:'chip-paused'};
+  const iconMap={running:'fa-spinner fa-pulse',done:'fa-check-circle',queued:'fa-clock',failed:'fa-times-circle',paused:'fa-pause-circle'};
+  const labelMap={running:'Running',done:'Done',queued:'Queued',failed:'Failed',paused:'Paused'};
+  
+  tbody.innerHTML=data.map(b=>{
+    const progressColor=b.status==='done'?'green':b.status==='failed'?'red':b.status==='paused'?'orange':b.type;
+    // Screenshot shows a pause icon for all actions
+    const actionBtn=`<button class="play-btn" onclick="pauseBatch('${b.id}')" title="Pause"><i class="fas fa-pause"></i></button>`;
+    
+    return `<tr>
+      <td><strong>${b.id}</strong></td>
+      <td><span class="batch-type-indicator ${b.type}">${b.type.toUpperCase()}</span></td>
+      <td style="font-family:monospace;font-size:12.5px;">${b.startNpi.toLocaleString()} – ${b.endNpi.toLocaleString()}</td>
+      <td><span class="status-chip ${chipMap[b.status]}"><i class="fas ${iconMap[b.status]}"></i> ${labelMap[b.status]}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;min-width:130px;">
+          <div class="progress-bar" style="flex:1;"><div class="progress-fill ${progressColor}" style="width:${b.progress}%;"></div></div>
+          <span style="font-size:11px;color:var(--text-muted);font-weight:600;min-width:32px;">${b.progress}%</span>
+        </div>
+      </td>
+      <td style="font-size:11.5px;color:var(--text-muted);white-space:nowrap;">${b.eta}</td>
+      <td>${actionBtn}</td>
+    </tr>`;
+  }).join('');
+  if(el('navBatchBadge'))el('navBatchBadge').textContent=state.qppBatches.filter(b=>!b.movedToFinal).length+state.nppesBatches.filter(b=>!b.movedToFinal).length;
+}
+
+function findBatch(id){return state.qppBatches.find(b=>b.id===id)||state.nppesBatches.find(b=>b.id===id);}
+function startBatch(id){const b=findBatch(id);if(b){b.status='running';b.eta=formatDuration(b.totalSecs);addAuditLog(`Started ${id}`,['Batch']);renderAll();showToast(`Started ${id}`,'success');}}
+function pauseBatch(id){const b=findBatch(id);if(b){b.status='paused';b.eta=formatDuration(b.totalSecs*(1-b.progress/100))+' (paused)';addAuditLog(`Paused ${id}`,['Batch']);renderAll();showToast(`Paused ${id}`,'warning');}}
+function resumeBatch(id){const b=findBatch(id);if(b){b.status='running';b.eta=formatDuration(b.totalSecs*(1-b.progress/100));addAuditLog(`Resumed ${id}`,['Batch']);renderAll();showToast(`Resumed ${id}`,'success');}}
+function retryBatch(id){const b=findBatch(id);if(b){b.status='running';b.progress=0;b.eta=formatDuration(b.totalSecs);addAuditLog(`Retrying ${id}`,['Batch']);renderAll();showToast(`Retrying ${id}`,'info');}}
+
+/* ============ RENDER — FINAL DATA ============ */
+function renderFinalData(){
+  const container=document.getElementById('finalBatchList');if(!container)return;
+  const totalNpis=state.finalBatchGroups.reduce((s,g)=>s+g.npiCount,0);
+  const qppNpis=state.finalBatchGroups.filter(g=>g.type==='qpp').reduce((s,g)=>s+g.npiCount,0);
+  const nppesNpis=state.finalBatchGroups.filter(g=>g.type==='nppes').reduce((s,g)=>s+g.npiCount,0);
+  const el=id=>document.getElementById(id);
+  if(el('finalTotal'))el('finalTotal').textContent=totalNpis.toLocaleString();
+  if(el('finalBatches'))el('finalBatches').textContent=state.finalBatchGroups.length;
+  if(el('finalQpp'))el('finalQpp').textContent=qppNpis.toLocaleString();
+  if(el('finalNppes'))el('finalNppes').textContent=nppesNpis.toLocaleString();
+  if(el('navFinalBadge'))el('navFinalBadge').textContent=totalNpis.toLocaleString();
+  const searchInput=document.getElementById('finalSearchInput');
+  const q=searchInput?searchInput.value.toLowerCase():'';
+  let groups=[...state.finalBatchGroups];
+  if(q){groups=groups.map(g=>{const m=g.npis.filter(n=>n.npi.includes(q)||n.name.toLowerCase().includes(q));if(g.batchId.toLowerCase().includes(q))return g;if(m.length)return {...g,npis:m};return null;}).filter(Boolean);}
+  groups.sort((a,b)=>b.completedAt-a.completedAt);
+  container.innerHTML=groups.slice(0,10).map(g=>renderBatchGroup(g)).join('')+(groups.length>10?`<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12.5px;">+ ${groups.length-10} more batches</div>`:'');
+}
+function gid(group){return group.batchId.replace(/[^A-Za-z0-9]/g,'-');}
+function renderBatchGroup(group){
+  const cls=group.type==='qpp'?'qpp':'nppes';
+  const icon=group.type==='qpp'?'fa-bolt':'fa-id-card';
+  const title=group.type==='qpp'?'QPP Verified':'NPPES Fetched';
+  const groupId=gid(group);
+  const shownNpis=group.npis.slice(0,50);
+  return `<div class="batch-group"><div class="batch-group-header ${cls}" onclick="toggleBatchGroup('${groupId}')">
+    <div class="batch-group-left"><div class="batch-group-icon"><i class="fas ${icon}"></i></div><div><div class="batch-group-title">${group.batchId}</div><div class="batch-group-meta">${title} · Completed ${timeAgo(group.completedAt.getTime())}</div></div></div>
+    <div class="batch-group-stats"><div class="batch-group-stat"><div class="val">${group.npiCount.toLocaleString()}</div><div class="lbl">NPIs</div></div><div class="batch-group-stat"><div class="val" style="color:var(--success);">✓</div><div class="lbl">Moved</div></div><div class="batch-group-toggle"><i class="fas fa-chevron-down"></i> View</div></div>
+  </div><div class="batch-group-body" id="group-body-${groupId}">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Showing ${shownNpis.length} of ${group.npis.length} NPIs</div>
+    ${shownNpis.map(npi=>renderMiniNpiRow(npi,group.type)).join('')}
+  </div></div>`;
+}
+function renderMiniNpiRow(npi,type){
+  const qppChip=npi.qppResult?`<span class="status-chip ${npi.qppResult.eligible?'chip-eligible':'chip-not-eligible'}" style="font-size:10.5px;padding:3px 8px;"><i class="fas ${npi.qppResult.eligible?'fa-check-circle':'fa-times-circle'}"></i> ${npi.qppResult.eligible?'Eligible':'Not Eligible'}</span>`:'';
+  const nppesChip=npi.nppesResult?`<span class="status-chip chip-eligible" style="font-size:10.5px;padding:3px 8px;"><i class="fas fa-id-card"></i> NPPES ✓</span>`:'';
+  return `<div class="npi-mini-row" onclick="openCard('${npi.npi}')"><span class="npi-num">${npi.npi}</span><span class="npi-name">${npi.name}</span><div class="npi-chips">${qppChip}${nppesChip}</div><button class="open-btn" onclick="event.stopPropagation();openCard('${npi.npi}')"><i class="fas fa-id-card"></i> Open</button></div>`;
+}
+function toggleBatchGroup(groupId){const b=document.getElementById(`group-body-${groupId}`);if(b)b.classList.toggle('open');}
+function expandAllBatches(){document.querySelectorAll('.batch-group-body').forEach(b=>b.classList.add('open'));}
+function collapseAllBatches(){document.querySelectorAll('.batch-group-body').forEach(b=>b.classList.remove('open'));}
+
+/* ============ RENDER — PROVIDER TABLE ============ */
+function getFilteredProviders(){
+  let data=[...PROVIDERS];
+  if(state.currentFilter==='final'){data=data.filter(p=>state.finalBatchGroups.some(g=>g.npis.some(n=>n.npi===p.npi)));}
+  else if(state.currentFilter!=='all'){
+    const map={eligible:['eligible'],'not-eligible':['not-eligible'],pending:['queued','verifying','notverified']};
+    const s=map[state.currentFilter]||[];
+    if(s.length)data=data.filter(p=>s.includes(p.status));
+  }
+  if(state.currentSearch){const q=state.currentSearch.toLowerCase();data=data.filter(p=>p.npi.includes(q)||p.name.toLowerCase().includes(q)||p.facility.toLowerCase().includes(q));}
+  return data;
+}
+function renderProviderTable(){
+  const tbody=document.getElementById('tableBody');if(!tbody)return;
+  const data=getFilteredProviders();
+  if(!data.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:50px;color:var(--text-muted);">No NPIs match</td></tr>';}
+  else{
+    const iconMap={eligible:'fa-check-circle','not-eligible':'fa-times-circle',queued:'fa-clock',verifying:'fa-spinner fa-pulse',notverified:'fa-minus-circle',error:'fa-exclamation-circle'};
+    const classMap={eligible:'chip-eligible','not-eligible':'chip-not-eligible',queued:'chip-queued',verifying:'chip-verifying',notverified:'chip-notverified',error:'chip-error'};
+    tbody.innerHTML=data.map(p=>{
+      const isFinal=state.finalBatchGroups.some(g=>g.npis.some(n=>n.npi===p.npi&&(n.qppResult||n.nppesResult)));
+      const finalChip=isFinal?'<span class="status-chip chip-final"><i class="fas fa-star"></i> FINAL</span>':'<span class="status-chip chip-notverified">—</span>';
+      const sel=state.selected.has(p.npi);
+      return `<tr class="${sel?'selected':''}"><td class="checkbox-cell"><input type="checkbox" ${sel?'checked':''} onchange="toggleSelect('${p.npi}',this)"></td><td><strong>${p.npi}</strong></td><td>${p.name}</td><td>${p.facility}</td><td><span class="status-chip ${classMap[p.status]}"><i class="fas ${iconMap[p.status]}"></i> ${p.statusLabel}</span></td><td><span class="status-chip ${p.nppes==='verified'?'chip-eligible':'chip-notverified'}"><i class="fas fa-id-card"></i> ${p.nppes}</span></td><td>${finalChip}</td><td><button class="btn-open-card" onclick="event.stopPropagation();openCard('${p.npi}')"><i class="fas fa-id-card"></i> Open</button></td></tr>`;
+    }).join('');
+  }
+  updateCounts();
+  updateBulkBar();
+}
+function updateCounts(){
+  const el=id=>document.getElementById(id);
+  if(el('countAll'))el('countAll').textContent=PROVIDERS.length;
+  if(el('countEligible'))el('countEligible').textContent=PROVIDERS.filter(p=>p.status==='eligible').length;
+  if(el('countNotEligible'))el('countNotEligible').textContent=PROVIDERS.filter(p=>p.status==='not-eligible').length;
+  if(el('countFinal'))el('countFinal').textContent=state.finalBatchGroups.length;
+  if(el('provTotal'))el('provTotal').textContent=PROVIDERS.length;
+  if(el('provEligible'))el('provEligible').textContent=PROVIDERS.filter(p=>p.status==='eligible').length;
+  if(el('provErrors'))el('provErrors').textContent=PROVIDERS.filter(p=>p.status==='error').length;
+  if(el('provVerified'))el('provVerified').textContent=PROVIDERS.filter(p=>p.nppes==='verified').length;
+  if(el('navProvidersBadge'))el('navProvidersBadge').textContent=PROVIDERS.length;
+  if(el('activeJobCount'))el('activeJobCount').textContent=state.qppBatches.filter(b=>b.status==='running').length+state.nppesBatches.filter(b=>b.status==='running').length;
+}
+function toggleSelect(npi,el){if(el.checked)state.selected.add(npi);else state.selected.delete(npi);renderProviderTable();}
+function toggleSelectAll(el){if(el.checked)PROVIDERS.forEach(p=>state.selected.add(p.npi));else state.selected.clear();renderProviderTable();}
+function clearSelection(){state.selected.clear();const sa=document.getElementById('selectAll');if(sa)sa.checked=false;renderProviderTable();}
+function updateBulkBar(){document.getElementById('bulkBar').classList.toggle('show',state.selected.size>0);document.getElementById('selectedCount').textContent=state.selected.size;}
+function handleSearch(){state.currentSearch=document.getElementById('searchInput').value;renderProviderTable();}
+function setFilter(filter,el){state.currentFilter=filter;document.querySelectorAll('#view-providers .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderProviderTable();}
+
+/* ============ RENDER — MISC ============ */
+function renderMonitorTable(){
+  const tbody=document.getElementById('monitorTableBody');if(!tbody)return;
+  const running=[...state.qppBatches.filter(b=>b.status==='running'),...state.nppesBatches.filter(b=>b.status==='running')];
+  if(!running.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">No running batches</td></tr>';}
+  else{
+    tbody.innerHTML=running.slice(0,10).map((b,i)=>`<tr><td><strong>${b.id}</strong></td><td><span class="batch-type-indicator ${b.type}">${b.type.toUpperCase()}</span></td><td>Worker-${String(i+1).padStart(2,'0')}</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:80px;"><div class="progress-fill ${b.type}" style="width:${b.progress}%;"></div></div>${b.progress}%</div></td><td>${b.eta}</td><td><span class="status-chip chip-running"><i class="fas fa-spinner fa-pulse"></i> Running</span></td></tr>`).join('');
+  }
+  const el=id=>document.getElementById(id);
+  if(el('monitorQppRunning'))el('monitorQppRunning').textContent=state.qppBatches.filter(b=>b.status==='running').length;
+  if(el('monitorNppesRunning'))el('monitorNppesRunning').textContent=state.nppesBatches.filter(b=>b.status==='running').length;
+  const hour=new Date().getHours();
+  const slot=(hour>=22||hour<2)?'QPP Slot':(hour>=2&&hour<6)?'NPPES Slot':'Idle';
+  if(el('monitorCurrentSlot'))el('monitorCurrentSlot').textContent=slot;
+}
+function renderTimeSlotGrid(){
+  const grid=document.getElementById('timeSlotGrid');if(!grid)return;
+  let html='';
+  for(let h=0;h<24;h++){
+    const isQpp=(h>=22||h<2),isNppes=(h>=2&&h<6);
+    let cls='time-block';
+    if(isQpp)cls+=' qpp';else if(isNppes)cls+=' nppes';else cls+=' idle';
+    html+=`<div class="${cls}" style="width:4.16%;" title="${String(h).padStart(2,'0')}:00">${String(h).padStart(2,'0')}</div>`;
+  }
+  grid.innerHTML=html;
+}
+function renderNotifications(){
+  const body=document.getElementById('notifBody');if(!body)return;
+  if(!state.notifications.length){body.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);">No notifications</div>';return;}
+  body.innerHTML=state.notifications.map(n=>`<div class="notif-item ${n.unread?'unread':''}" onclick="handleNotifClick(${n.id})"><div class="notif-icon ${n.type}"><i class="fas ${n.type==='green'?'fa-check':n.type==='purple'?'fa-id-card':n.type==='orange'?'fa-exclamation-triangle':'fa-info'}"></i></div><div class="notif-content"><div class="title">${n.title}</div><div class="body">${n.body}</div><div class="time">${timeAgo(n.timestamp)}</div></div></div>`).join('');
+}
+function updateNotifDot(){const d=document.getElementById('notifDot');if(d)d.style.display=state.notifications.some(n=>n.unread)?'block':'none';}
+function handleNotifClick(id){const n=state.notifications.find(x=>x.id===id);if(n){n.unread=false;if(n.action)n.action();}renderNotifications();updateNotifDot();}
+function markAllRead(){state.notifications.forEach(n=>n.unread=false);renderNotifications();updateNotifDot();}
+function toggleNotifPanel(){state.notifPanelOpen=!state.notifPanelOpen;document.getElementById('notifPanel').classList.toggle('open',state.notifPanelOpen);}
+function closeNotifPanel(){state.notifPanelOpen=false;document.getElementById('notifPanel').classList.remove('open');}
+function renderAuditLog(){
+  const c=document.getElementById('auditList');if(!c)return;
+  if(!state.auditLog.length){c.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">No entries</div>';return;}
+  c.innerHTML=state.auditLog.map(a=>`<div class="audit-item"><div class="audit-avatar">${a.user}</div><div class="audit-content"><div class="action">${a.action}</div><div class="meta">${(a.meta||[]).map(m=>`<span>${m}</span>`).join('')} <span>${timeAgo(a.timestamp)}</span></div></div></div>`).join('');
+}
+function renderJobsPanel(){
+  const body=document.getElementById('jobsBody');if(!body)return;
+  const active=[...state.qppBatches.filter(b=>b.status==='running'||b.status==='paused'),...state.nppesBatches.filter(b=>b.status==='running'||b.status==='paused')];
+  document.getElementById('activeJobCount').textContent=active.length;
+  if(!active.length){body.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12.5px;">No active jobs</div>';return;}
+  body.innerHTML=active.slice(0,6).map(b=>`<div class="job-item"><div class="job-top"><span><span class="batch-type-indicator ${b.type}" style="font-size:9px;">${b.type.toUpperCase()}</span> ${b.id}</span><span style="font-size:10.5px;color:var(--text-muted);">${b.timeSlot}</span></div><div class="progress-bar"><div class="progress-fill ${b.type}" style="width:${b.progress}%;"></div></div><div class="job-meta">${b.progress}% · ${b.eta}</div></div>`).join('');
+}
+function toggleJobsPanel(){state.jobsMinimized=!state.jobsMinimized;document.getElementById('jobsPanel').classList.toggle('minimized',state.jobsMinimized);}
+
+/* ============ NPI CARD — 8 tabs ============ */
+function openCard(npi){
+  let p=PROVIDERS.find(x=>x.npi===npi);
+  if(!p){
+    for(const g of state.finalBatchGroups){const f=g.npis.find(n=>n.npi===npi);if(f){p=f;break;}}
+  }
+  if(!p)return;
+  state.currentNpi=npi;state.activeTab='allinone';
+  let qppRes=null,nppesRes=null;
+  state.finalBatchGroups.forEach(g=>{const f=g.npis.find(n=>n.npi===npi);if(f){if(f.qppResult)qppRes=f.qppResult;if(f.nppesResult)nppesRes=f.nppesResult;}});
+  renderCard(p,qppRes,nppesRes);
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sideCard').classList.add('open');
+  addAuditLog(`Viewed NPI card for ${npi}`,['Read']);
+}
+function closeCard(){document.getElementById('overlay').classList.remove('open');document.getElementById('sideCard').classList.remove('open');}
+function renderCard(p,qppRes,nppesRes){
+  const nppesMap={verified:{label:'Verified',icon:'fa-check-circle',cls:'chip-eligible'},'not-verified':{label:'Not verified',icon:'fa-minus-circle',cls:'chip-notverified'},fetching:{label:'Fetching',icon:'fa-spinner fa-pulse',cls:'chip-verifying'},error:{label:'Error',icon:'fa-exclamation-circle',cls:'chip-error'}};
+  const nppes=nppesMap[p.nppes]||nppesMap['not-verified'];
+  const isEligible=qppRes?qppRes.eligible:p.status==='eligible';
+  const qppStatusVal=qppRes?(qppRes.eligible?'Eligible':'Not Eligible'):(p.status==='eligible'?'Eligible':p.status==='not-eligible'?'Not Eligible':(p.status==='queued'||p.status==='verifying')?'Pending':p.status==='error'?'Error':'—');
+  const qppStatusClass=qppRes?(qppRes.eligible?'green':'red'):(p.status==='eligible'?'green':p.status==='not-eligible'?'red':(p.status==='queued'||p.status==='verifying')?'blue':'gray');
+  const groupVal=qppRes?qppRes.group:(p.group||'—');
+  const apmVal=qppRes?qppRes.apm:(p.apm||'—');
+  const vgVal=qppRes?qppRes.vg:(p.vg||'—');
+  const isFinal=qppRes&&nppesRes;
+  document.getElementById('cardTopSection').innerHTML=`
+    ${isFinal?'<div style="background:linear-gradient(135deg,var(--success),#059669);color:#fff;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:12.5px;font-weight:700;"><i class="fas fa-star"></i> FINAL RECORD — Fully Verified</div>':''}
+    <div class="npi-main-info"><div><div class="npi-number">${p.npi}</div><div class="npi-name">${p.name}</div><div class="npi-facility">${p.facility}</div>
+    <div class="status-chips-row"><span class="status-chip ${isEligible?'chip-eligible':'chip-not-eligible'}"><i class="fas ${isEligible?'fa-check-circle':'fa-times-circle'}"></i> ${qppStatusVal}</span><span class="status-chip ${nppes.cls}"><i class="fas ${nppes.icon}"></i> NPPES ${nppes.label}</span>${isFinal?'<span class="status-chip chip-final"><i class="fas fa-star"></i> FINAL</span>':''}</div></div></div>
+    <div class="qpp-tiles"><div class="qpp-tile"><div class="label">Status</div><div class="val ${qppStatusClass}">${qppStatusVal}</div></div><div class="qpp-tile"><div class="label">Group</div><div class="val ${groupVal==='Yes'?'green':groupVal==='No'?'red':'gray'}">${groupVal}</div></div><div class="qpp-tile"><div class="label">APM</div><div class="val ${apmVal==='Yes'?'green':apmVal==='No'?'red':'gray'}">${apmVal}</div></div><div class="qpp-tile"><div class="label">VG</div><div class="val ${vgVal==='Yes'?'green':vgVal==='No'?'red':'gray'}">${vgVal}</div></div></div>
+    <div class="card-actions"><button class="btn btn-qpp" onclick="verifySingle('${p.npi}','qpp')"><i class="fas fa-bolt"></i> Verify QPP</button><button class="btn btn-nppes" onclick="verifySingle('${p.npi}','nppes')"><i class="fas fa-id-card"></i> Verify NPPES</button><button class="btn btn-outline" onclick="showToast('Exported NPI ${p.npi}','success')"><i class="fas fa-download"></i> Export</button><button class="btn btn-outline" onclick="askAI('${p.npi}')"><i class="fas fa-robot"></i> Ask AI</button></div>`;
+  const tabs=[{key:'allinone',label:'All-in-One',icon:'fa-layer-group'},{key:'registry',label:'Registry',icon:'fa-id-card'},{key:'cms',label:'CMS Fields',icon:'fa-database'},{key:'qpp',label:'QPP',icon:'fa-bolt'},{key:'notes',label:'Notes',icon:'fa-sticky-note'},{key:'history',label:'History',icon:'fa-history'},{key:'audit',label:'Audit',icon:'fa-shield-halved'},{key:'raw',label:'Raw Data',icon:'fa-code'}];
+  document.getElementById('cardTabs').innerHTML=tabs.map(t=>`<div class="card-tab ${state.activeTab===t.key?'active':''}" onclick="setCardTab('${t.key}',this)"><i class="fas ${t.icon}"></i>${t.label}</div>`).join('');
+  renderCardTab(p,qppRes,nppesRes);
+}
+function setCardTab(tab,el){state.activeTab=tab;document.querySelectorAll('#cardTabs .card-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  const p=PROVIDERS.find(x=>x.npi===state.currentNpi)||(()=>{for(const g of state.finalBatchGroups){const f=g.npis.find(n=>n.npi===state.currentNpi);if(f)return f;}return null;})();
+  if(!p)return;
+  let qppRes=null,nppesRes=null;state.finalBatchGroups.forEach(g=>{const f=g.npis.find(n=>n.npi===state.currentNpi);if(f){if(f.qppResult)qppRes=f.qppResult;if(f.nppesResult)nppesRes=f.nppesResult;}});
+  renderCardTab(p,qppRes,nppesRes);
+}
+function renderCardTab(p,qppRes,nppesRes){
+  const c=document.getElementById('cardContent');if(!c)return;
+  let html='';
+  const ln=p.legalName||{};
+  if(state.activeTab==='allinone'){
+    const isEligible=qppRes?qppRes.eligible:p.status==='eligible';
+    html=`<div class="tab-section-label"><i class="fas fa-layer-group"></i> Merged All-in-One Record</div>
+    <div class="detail-section">
+      <div class="detail-row"><span class="detail-label">NPI</span><span class="detail-value">${p.npi}</span></div>
+      <div class="detail-row"><span class="detail-label">Entity type</span><span class="detail-value">${p.entityType}</span></div>
+      <div class="detail-row"><span class="detail-label">Enumeration date</span><span class="detail-value">${p.enumerationDate||'—'}</span></div>
+      <div class="detail-row"><span class="detail-label">Last update</span><span class="detail-value">${p.lastUpdate||'—'}</span></div>
+      <div class="detail-row"><span class="detail-label">Primary taxonomy</span><span class="detail-value">${p.taxonomy?.[0]?.code||'—'} · ${p.taxonomy?.[0]?.desc||'—'}</span></div>
+      <div class="detail-row"><span class="detail-label">QPP eligibility</span><span class="detail-value" style="color:${isEligible?'var(--success)':'var(--danger)'};">${qppRes?(qppRes.eligible?'Eligible':'Not Eligible'):(p.status==='eligible'?'Eligible':p.status==='not-eligible'?'Not Eligible':'Pending')}</span></div>
+      <div class="detail-row"><span class="detail-label">NPPES status</span><span class="detail-value">${nppesRes?'Verified':(p.nppes==='verified'?'Verified':'Pending')}</span></div>
+      <div class="detail-row"><span class="detail-label">Final status</span><span class="detail-value">${qppRes&&nppesRes?'✅ Complete':'⏳ Awaiting'}</span></div>
+    </div>`;
+  }
+  if(state.activeTab==='registry'){
+    const fullName=ln.org||[ln.prefix,ln.first,ln.middle,ln.last,ln.suffix,ln.credential].filter(Boolean).join(' ');
+    html=`<div class="tab-section-label"><i class="fas fa-user"></i> Basic Information</div>
+    <div class="detail-section"><div class="detail-row"><span class="detail-label">Legal name</span><span class="detail-value">${fullName||'—'}</span></div><div class="detail-row"><span class="detail-label">Entity type</span><span class="detail-value">${p.entityType||'—'}</span></div>${p.sex?`<div class="detail-row"><span class="detail-label">Sex</span><span class="detail-value">${p.sex}</span></div>`:''}${p.ein?`<div class="detail-row"><span class="detail-label">EIN</span><span class="detail-value">${p.ein}</span></div>`:''}</div>`;
+    if(p.mailingAddress)html+=`<div class="tab-section-label"><i class="fas fa-envelope"></i> Mailing</div><div class="address-block"><div class="addr-line">${p.mailingAddress.line1||''}${p.mailingAddress.line2?', '+p.mailingAddress.line2:''}<br>${p.mailingAddress.city||''}, ${p.mailingAddress.state||''} ${p.mailingAddress.zip||''}</div></div>`;
+    if(p.practiceAddress)html+=`<div class="tab-section-label"><i class="fas fa-clinic-medical"></i> Practice</div><div class="address-block"><div class="addr-line">${p.practiceAddress.line1||''}${p.practiceAddress.line2?', '+p.practiceAddress.line2:''}<br>${p.practiceAddress.city||''}, ${p.practiceAddress.state||''} ${p.practiceAddress.zip||''}</div></div>`;
+  }
+  if(state.activeTab==='cms'){
+    html=`<div class="tab-section-label"><i class="fas fa-tags"></i> Taxonomy</div>
+    <div class="detail-section" style="padding:0;overflow:hidden;"><table class="mini-table"><thead><tr><th>Code</th><th>Description</th><th>Primary</th></tr></thead><tbody>${(p.taxonomy||[]).map(t=>`<tr><td><strong>${t.code}</strong></td><td>${t.desc}</td><td>${t.primary?'<span class="chip-mini yes">Yes</span>':'<span class="chip-mini no">No</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  if(state.activeTab==='qpp'){
+    const years=p.qppYears||[];
+    if(qppRes&&!years.length)years.push({year:qppRes.year||2026,eligible:qppRes.eligible,group:qppRes.group,apm:qppRes.apm,vg:qppRes.vg,status:'Verified'});
+    html=`<div class="tab-section-label"><i class="fas fa-calendar-check"></i> Year-wise Eligibility</div>`;
+    if(years.length){html+=`<div class="detail-section">${years.map(y=>`<div class="year-row"><span class="yr">${y.year}</span><div class="yr-flags"><span class="chip-mini ${y.eligible?'yes':'no'}"><i class="fas fa-${y.eligible?'check':'times'}"></i> ${y.eligible?'Eligible':'Not Eligible'}</span><span class="chip-mini ${y.group==='Yes'?'yes':'no'}">Group: ${y.group||'—'}</span><span class="chip-mini ${y.apm==='Yes'?'yes':'no'}">APM: ${y.apm||'—'}</span></div></div>`).join('')}</div>`;}
+    else html+=`<div class="detail-section" style="text-align:center;padding:30px;color:var(--text-muted);">No QPP data yet</div>`;
+  }
+  if(state.activeTab==='notes'){
+    const notes=p.notes||[];
+    html=`<div class="tab-section-label"><i class="fas fa-sticky-note"></i> Internal Notes (${notes.length})</div>${notes.length?notes.map(n=>`<div class="note-item"><div class="note-head"><span><strong>${n.author}</strong></span><span>${n.date}</span></div><div class="note-body">${n.body}</div></div>`).join(''):'<div class="detail-section" style="text-align:center;color:var(--text-muted);padding:20px;">No notes yet</div>'}`;
+  }
+  if(state.activeTab==='history'){
+    const hist=p.history||[];
+    html=`<div class="tab-section-label"><i class="fas fa-history"></i> Verification History (${hist.length})</div><div class="detail-section"><div class="timeline">${hist.map(h=>`<div class="timeline-item ${h.type||'info'}"><div class="tl-time">${h.date}</div><div class="tl-action">${h.action}</div></div>`).join('')}</div></div>`;
+  }
+  if(state.activeTab==='audit'){
+    const a=p.audit||[];
+    html=`<div class="tab-section-label"><i class="fas fa-shield-halved"></i> Audit Log (${a.length})</div><div class="detail-section" style="padding:0;overflow:hidden;"><table class="mini-table"><thead><tr><th>User</th><th>Action</th><th>Date</th></tr></thead><tbody>${a.map(x=>`<tr><td><strong>${x.user}</strong></td><td>${x.action}</td><td style="color:var(--text-muted);font-size:11.5px;">${x.date}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  if(state.activeTab==='raw'){
+    const raw={npi:p.npi,source:'NPPES + CMS + QPP merged',fetched_at:new Date().toISOString(),nppes:p, qpp:qppRes, nppes_result:nppesRes};
+    html=`<div class="tab-section-label"><i class="fas fa-code"></i> Raw Source Response</div><pre class="raw-pre">${escapeHtml(JSON.stringify(raw,null,2))}</pre>`;
+  }
+  c.innerHTML=html;
+}
+
+/* ============ VERIFY / JOBS ============ */
+function openVerifyModal(type){
+  document.getElementById('modalJobType').value=type;
+  document.getElementById('modalTitle').innerHTML=type==='qpp'?'<i class="fas fa-bolt" style="color:var(--qpp-color);"></i> Start QPP Job':'<i class="fas fa-id-card" style="color:var(--nppes-color);"></i> Start NPPES Job';
+  document.getElementById('modalDesc').textContent='Each batch contains 500 NPIs.';
+  document.getElementById('verifyModal').classList.add('open');
+}
+function closeVerifyModal(){document.getElementById('verifyModal').classList.remove('open');}
+function createJob(){
+  const type=document.getElementById('modalJobType').value;
+  const numBatches=parseInt(document.getElementById('modalNumBatches').value);
+  closeVerifyModal();
+  for(let i=0;i<numBatches;i++){
+    const index=state.batchCounter[type]+1;state.batchCounter[type]=index;
+    createBatch(type,index,i===0?'running':'queued');
+  }
+  addAuditLog(`Created ${type.toUpperCase()} job with ${numBatches} batches`,['Job']);
+  addNotification(`${type.toUpperCase()} job started`,`${numBatches} batches created`,type==='qpp'?'blue':'purple');
+  showToast(`${type.toUpperCase()} job started — ${numBatches} batches`,type==='qpp'?'qpp':'nppes');
+  renderAll();
+}
+function verifySingle(npi,type){closeCard();showToast(`${type.toUpperCase()} verification queued for ${npi}`,'success');addAuditLog(`Queued ${type.toUpperCase()} for ${npi}`,['Job']);}
+function bulkStart(type){if(!state.selected.size){showToast('Select NPIs first','warning');return;}openVerifyModal(type);}
+function startImport(){
+  addAuditLog('Started CMS import',['Import']);
+  addNotification('Import started','Creating batches...','purple');
+  setTimeout(()=>{const index=state.batchCounter['qpp']+1;state.batchCounter['qpp']=index;createBatch('qpp',index,'running');renderAll();showToast('Import complete','success');},1200);
+}
+
+/* ============ VIEW SWITCHING ============ */
+function switchView(view,el){
+  state.currentView=view;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const target=document.getElementById('view-'+view);
+  if(target)target.classList.add('active');
+  const titles={dashboard:'Dashboard',providers:'Provider List',batch:'Batch Manager',finalData:'Final Data',monitor:'Live Monitor',import:'CMS Import',wizard:'Import Wizard',reports:'Reports',analytics:'Analytics',audit:'Audit Log',users:'Users',settings:'Settings',api:'API Keys',webhooks:'Webhooks'};
+  document.getElementById('pageTitle').textContent=titles[view]||view;
+  document.querySelector('.content').scrollTop=0;
+  renderAll();
+}
+function toggleTheme(){
+  state.theme=state.theme==='light'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',state.theme);
+  document.getElementById('themeIcon').className=state.theme==='dark'?'fas fa-sun':'fas fa-moon';
+  document.getElementById('themeLabel').textContent=state.theme==='dark'?'Light':'Dark';
+  document.getElementById('themeSwitch').classList.toggle('on',state.theme==='dark');
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed');}
+
+/* ============ COMMAND PALETTE ============ */
+const COMMANDS=[
+  {icon:'fa-users',title:'Go to Providers',sub:'Provider list',shortcut:'',action:()=>{closeCommandPalette();switchView('providers',document.querySelector('[data-view=providers]'));}},
+  {icon:'fa-chart-line',title:'Go to Dashboard',sub:'Overview & charts',shortcut:'',action:()=>{closeCommandPalette();switchView('dashboard',document.querySelector('[data-view=dashboard]'));}},
+  {icon:'fa-layer-group',title:'Go to Batch Manager',sub:'All batches',shortcut:'',action:()=>{closeCommandPalette();switchView('batch',document.querySelector('[data-view=batch]'));}},
+  {icon:'fa-database',title:'Go to Final Data',sub:'Final records',shortcut:'',action:()=>{closeCommandPalette();switchView('finalData',document.querySelector('[data-view=finalData]'));}},
+  {icon:'fa-satellite-dish',title:'Go to Live Monitor',sub:'Real-time metrics',shortcut:'',action:()=>{closeCommandPalette();switchView('monitor',document.querySelector('[data-view=monitor]'));}},
+  {icon:'fa-bolt',title:'Start QPP Job',sub:'Run QPP verification',shortcut:'⌘⇧Q',action:()=>{closeCommandPalette();openVerifyModal('qpp');}},
+  {icon:'fa-id-card',title:'Start NPPES Job',sub:'Run NPPES verification',shortcut:'⌘⇧N',action:()=>{closeCommandPalette();openVerifyModal('nppes');}},
+  {icon:'fa-moon',title:'Toggle Theme',sub:'Light/Dark mode',shortcut:'⌘⇧L',action:()=>{closeCommandPalette();toggleTheme();}},
+  {icon:'fa-keyboard',title:'Show Shortcuts',sub:'Keyboard shortcuts',shortcut:'⌘/',action:()=>{closeCommandPalette();openShortcuts();}},
+  {icon:'fa-robot',title:'Open AI Assistant',sub:'Ask about data',shortcut:'⌘⇧A',action:()=>{closeCommandPalette();toggleAIPanel();}}
+];
+function openCommandPalette(){document.getElementById('commandPalette').classList.add('open');document.getElementById('cmdInput').value='';document.getElementById('cmdInput').focus();state.selectedCmdIndex=0;state.filteredCommands=[...COMMANDS];renderCommands();}
+function closeCommandPalette(){document.getElementById('commandPalette').classList.remove('open');}
+function filterCommands(q){const l=q.toLowerCase();state.filteredCommands=COMMANDS.filter(c=>c.title.toLowerCase().includes(l)||c.sub.toLowerCase().includes(l));state.selectedCmdIndex=0;renderCommands();}
+function renderCommands(){
+  const c=document.getElementById('cmdResults');
+  if(!state.filteredCommands.length){c.innerHTML='<div class="cmd-empty"><i class="fas fa-search" style="font-size:24px;opacity:.3;display:block;margin-bottom:8px;"></i>No commands match</div>';return;}
+  c.innerHTML='<div class="cmd-section-label">Actions</div>'+state.filteredCommands.map((cmd,i)=>`<div class="cmd-item ${i===state.selectedCmdIndex?'selected':''}" onclick="state.selectedCmdIndex=${i};state.filteredCommands[${i}].action();"><div class="cmd-icon"><i class="fas ${cmd.icon}"></i></div><div class="cmd-text"><div class="cmd-title">${cmd.title}</div><div class="cmd-sub">${cmd.sub}</div></div>${cmd.shortcut?`<span class="cmd-shortcut">${cmd.shortcut}</span>`:''}</div>`).join('');
+}
+function openShortcuts(){document.getElementById('shortcutsModal').classList.add('open');}
+function closeShortcuts(){document.getElementById('shortcutsModal').classList.remove('open');}
+
+/* ============ AI ASSISTANT ============ */
+function toggleAIPanel(){state.aiPanelOpen=!state.aiPanelOpen;document.getElementById('aiPanel').classList.toggle('open',state.aiPanelOpen);if(state.aiPanelOpen)setTimeout(()=>document.getElementById('aiInput').focus(),200);}
+function askAI(q){document.getElementById('aiInput').value=q;sendAIMessage();}
+function sendAIMessage(){
+  const input=document.getElementById('aiInput');
+  const q=input.value.trim();if(!q)return;
+  const body=document.getElementById('aiBody');
+  body.innerHTML+=`<div class="ai-message user" style="justify-content:flex-end;"><div class="bubble">${escapeHtml(q)}</div><div class="avatar-sm user">You</div></div>`;
+  input.value='';body.scrollTop=body.scrollHeight;
+  setTimeout(()=>{const ans=getAIAnswer(q);body.innerHTML+=`<div class="ai-message"><div class="avatar-sm bot"><i class="fas fa-robot"></i></div><div class="bubble">${ans}</div></div>`;body.scrollTop=body.scrollHeight;},350);
+}
+function getAIAnswer(q){
+  const query=q.trim();const lower=query.toLowerCase();
+  const npiMatch=query.match(/\b\d{10}\b/);
+  if(npiMatch){
+    const npi=npiMatch[0];
+    let p=PROVIDERS.find(x=>x.npi===npi);
+    if(!p){for(const g of state.finalBatchGroups){const f=g.npis.find(n=>n.npi===npi);if(f){p=f;break;}}}
+    if(p)return renderNPIDetailsForAI(p);
+    return `I couldn't find NPI <strong>${npi}</strong>.<br><br>Try one of these:${PROVIDERS.slice(0,5).map(x=>`<a href="#" onclick="askAI('${x.npi}');return false;" style="display:block;color:var(--accent);font-weight:600;text-decoration:none;padding:6px 10px;background:var(--bg-card);border-radius:8px;font-size:12px;margin-top:6px;"><strong>${x.npi}</strong> — ${x.name}</a>`).join('')}`;
+  }
+  if(lower.includes('eligible')&&(lower.includes('how many')||lower.includes('count')||lower.includes('total'))){
+    const e=PROVIDERS.filter(p=>p.status==='eligible').length;
+    return `Based on current data:<br>• <strong>${e} NPIs</strong> are QPP eligible<br>• Out of <strong>${PROVIDERS.length} total</strong>`;
+  }
+  if(lower.includes('error')||lower.includes('fail')){
+    const errs=PROVIDERS.filter(p=>p.status==='error');
+    if(!errs.length)return 'No NPIs with errors currently.';
+    return `Found <strong>${errs.length}</strong> with errors:${errs.map(e=>`<a href="#" onclick="askAI('${e.npi}');return false;" style="display:block;color:var(--accent);font-weight:600;text-decoration:none;padding:6px 10px;background:var(--bg-card);border-radius:8px;font-size:12px;margin-top:6px;"><strong>${e.npi}</strong> — ${e.name}</a>`).join('')}`;
+  }
+  if(lower.includes('list')||lower.includes('show')||lower.includes('all providers')){
+    return `<strong>${PROVIDERS.length} NPIs loaded:</strong><div style="margin-top:10px;max-height:300px;overflow-y:auto;">${PROVIDERS.map(p=>`<a href="#" onclick="askAI('${p.npi}');return false;" style="display:block;color:var(--accent);font-weight:600;text-decoration:none;padding:6px 10px;background:var(--bg-card);border-radius:8px;font-size:11.5px;margin-top:4px;"><strong>${p.npi}</strong> — ${p.name}</a>`).join('')}</div>`;
+  }
+  if(lower.includes('hello')||lower.includes('hi')||lower==='hey'){
+    return `Hello! Type any <strong>10-digit NPI</strong> to see its full details, or ask for statistics. Try: <a href="#" onclick="askAI('1234567890');return false;" style="color:var(--accent);font-weight:600;">1234567890</a>`;
+  }
+  if(lower.includes('help')){
+    return `I can help you with:<br>• <strong>NPI Lookup</strong> — type any 10-digit NPI<br>• <strong>Statistics</strong> — "How many eligible?"<br>• <strong>Errors</strong> — "Show errors"<br>• <strong>List</strong> — "List all providers"`;
+  }
+  return `I found <strong>${PROVIDERS.length} NPIs</strong>. Try typing an NPI number or asking a question.<br><br>Example: <a href="#" onclick="askAI('1234567890');return false;" style="color:var(--accent);font-weight:600;">Try 1234567890</a>`;
+}
+function renderNPIDetailsForAI(p){
+  const qppStatusVal=p.status==='eligible'?'Eligible':p.status==='not-eligible'?'Not Eligible':(p.status==='queued'||p.status==='verifying')?'Pending':p.status==='error'?'Error':'Not verified';
+  const qppColor=p.status==='eligible'?'var(--success)':p.status==='not-eligible'?'var(--danger)':'var(--text-muted)';
+  const nppesLabel=p.nppes==='verified'?'Verified':p.nppes==='error'?'Error':p.nppes==='fetching'?'Fetching':'Not verified';
+  const primaryTax=(p.taxonomy&&p.taxonomy.find(t=>t.primary))||(p.taxonomy&&p.taxonomy[0])||{code:'—',desc:'—'};
+  const pa=p.practiceAddress||{line1:'',line2:'',city:'',state:'',zip:'',phone:''};
+  return `<div style="font-size:12.5px;line-height:1.6;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border-light);">
+      <div><strong style="font-size:15px;color:var(--accent);">${p.npi}</strong><div style="font-size:12.5px;margin-top:3px;font-weight:600;">${p.name}</div><div style="font-size:11.5px;color:var(--text-muted);">${p.facility}</div></div>
+      <button onclick="openCard('${p.npi}')" style="background:var(--accent);color:#fff;border:none;padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;white-space:nowrap;"><i class="fas fa-id-card"></i> Open Card</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px;margin-bottom:10px;">
+      <div><span style="color:var(--text-muted);">Entity:</span> <strong>${p.entityType||'—'}</strong></div>
+      <div><span style="color:var(--text-muted);">Sex:</span> <strong>${p.sex||'—'}</strong></div>
+      <div><span style="color:var(--text-muted);">Enumerated:</span> <strong>${p.enumerationDate||'—'}</strong></div>
+      <div><span style="color:var(--text-muted);">Updated:</span> <strong>${p.lastUpdate||'—'}</strong></div>
+    </div>
+    <div style="padding:8px 10px;background:var(--bg-card);border-radius:8px;margin-bottom:8px;">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">QPP Status (2026)</div>
+      <div style="font-size:12.5px;color:${qppColor};font-weight:700;">${qppStatusVal}</div>
+      <div style="font-size:11.5px;margin-top:3px;">Group: <strong>${p.group||'—'}</strong> · APM: <strong>${p.apm||'—'}</strong> · VG: <strong>${p.vg||'—'}</strong></div>
+    </div>
+    <div style="padding:8px 10px;background:var(--bg-card);border-radius:8px;margin-bottom:8px;">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">Primary Taxonomy</div>
+      <div style="font-size:12px;"><strong>${primaryTax.code}</strong> — ${primaryTax.desc}</div>
+    </div>
+    <div style="padding:8px 10px;background:var(--bg-card);border-radius:8px;margin-bottom:8px;">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">Practice Address</div>
+      <div style="font-size:12px;line-height:1.5;">${pa.line1||''}${pa.line2?', '+pa.line2:''}<br>${pa.city||''}, ${pa.state||''} ${pa.zip||''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <div style="padding:8px 10px;background:var(--bg-card);border-radius:8px;"><div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">NPPES</div><div style="font-size:12px;margin-top:2px;font-weight:600;">${nppesLabel}</div></div>
+      <div style="padding:8px 10px;background:var(--bg-card);border-radius:8px;"><div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Endpoints</div><div style="font-size:12px;margin-top:2px;font-weight:600;">${(p.endpoints||[]).length} linked</div></div>
+    </div>
+    <div style="font-size:10.5px;color:var(--text-muted);text-align:center;padding-top:8px;">💡 Click "Open Card" to see all 8 detail tabs</div>
+  </div>`;
+}
+
+/* ============ TOASTS ============ */
+function showToast(msg,type='info'){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  const icons={success:'fa-check-circle',warning:'fa-exclamation-triangle',error:'fa-times-circle',info:'fa-info-circle',qpp:'fa-bolt',nppes:'fa-id-card'};
+  t.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i> <span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.animation='slideIn .3s ease reverse';setTimeout(()=>t.remove(),300);},3000);
+}
+
+/* ============ RENDER ALL / SIM ============ */
+function renderAll(){
+  renderBatchTable();
+  renderProviderTable();
+  renderFinalData();
+  renderMonitorTable();
+  renderNotifications();
+  renderAuditLog();
+  renderJobsPanel();
+  renderTimeSlotGrid();
+  updateDashboard();
+}
+function updateDashboard(){
+  const totalNpis=state.finalBatchGroups.reduce((s,g)=>s+g.npiCount,0);
+  const qppNpis=state.finalBatchGroups.filter(g=>g.type==='qpp').reduce((s,g)=>s+g.npiCount,0);
+  const nppesNpis=state.finalBatchGroups.filter(g=>g.type==='nppes').reduce((s,g)=>s+g.npiCount,0);
+  const el=id=>document.getElementById(id);
+  if(el('dashQppCount'))el('dashQppCount').textContent=qppNpis.toLocaleString();
+  if(el('dashNppesCount'))el('dashNppesCount').textContent=nppesNpis.toLocaleString();
+  if(el('dashFinalCount'))el('dashFinalCount').textContent=totalNpis.toLocaleString();
+}
+
+function startLiveSimulation(){
+  setInterval(()=>{
+    let changed=false;
+    [...state.qppBatches,...state.nppesBatches].forEach(b=>{
+      if(b.status==='running'&&b.progress<100){
+        b.progress=Math.min(100,b.progress+Math.floor(Math.random()*3)+1);
+        if(b.progress>=100){
+          b.status='done';b.eta='—';b.completedAt=new Date();b.progress=100;
+          moveBatchToFinal(b);changed=true;
+        }else{b.eta=formatDuration(b.totalSecs*(1-b.progress/100));}
+      }
+    });
+    const qQ=state.qppBatches.filter(b=>b.status==='queued');
+    const qR=state.qppBatches.filter(b=>b.status==='running');
+    if(qQ.length&&qR.length<2){qQ[0].status='running';qQ[0].eta=formatDuration(qQ[0].totalSecs);changed=true;}
+    const nQ=state.nppesBatches.filter(b=>b.status==='queued');
+    const nR=state.nppesBatches.filter(b=>b.status==='running');
+    if(nQ.length&&nR.length<2){nQ[0].status='running';nQ[0].eta=formatDuration(nQ[0].totalSecs);changed=true;}
+    if(changed)renderAll();
+    if(state.currentView==='monitor')renderMonitorTable();
+  },2200);
+  setInterval(()=>{
+    const l=document.getElementById('lastSyncLabel');
+    if(l){const s=Math.floor(Math.random()*120)+1;l.textContent=`Last sync: ${s<60?s+'s':Math.floor(s/60)+'m'} ago`;}
+  },15000);
+}
+
+/* ============ INIT ============ */
+document.addEventListener('DOMContentLoaded',()=>{
+  state.masterPool=NPI_POOL;
+  generateInitialBatches();
+  renderAll();
+  addAuditLog('Portal loaded — unified v22',['System']);
+  addNotification('Welcome to v22 Unified','Batch Manager + Final Data + AI Lookup','blue');
+  startLiveSimulation();
+  showToast('Portal ready — 80 batches loaded','success');
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();openCommandPalette();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();toggleSidebar();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='/'){e.preventDefault();openShortcuts();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='l'){e.preventDefault();toggleTheme();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='a'){e.preventDefault();toggleAIPanel();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='q'){e.preventDefault();openVerifyModal('qpp');return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='n'){e.preventDefault();openVerifyModal('nppes');return;}
+    if(e.key==='Escape'){closeCard();closeVerifyModal();closeCommandPalette();closeShortcuts();closeNotifPanel();return;}
+    if(document.getElementById('commandPalette').classList.contains('open')){
+      if(e.key==='ArrowDown'){e.preventDefault();state.selectedCmdIndex=Math.min(state.selectedCmdIndex+1,state.filteredCommands.length-1);renderCommands();}
+      if(e.key==='ArrowUp'){e.preventDefault();state.selectedCmdIndex=Math.max(state.selectedCmdIndex-1,0);renderCommands();}
+      if(e.key==='Enter'){e.preventDefault();if(state.filteredCommands[state.selectedCmdIndex])state.filteredCommands[state.selectedCmdIndex].action();}
+    }
+  });
+  document.getElementById('verifyModal').addEventListener('click',e=>{if(e.target.id==='verifyModal')closeVerifyModal();});
+});
+</script>
+</body>
+</html>
