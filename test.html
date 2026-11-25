@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AWS CLF-C02 Full Mock Exam</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f6fa;
+        color: #172033;
+    }
+
+    /* START SCREEN */
+    #startScreen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .start-card {
+        width: 100%;
+        max-width: 650px;
+        background: white;
+        border-radius: 18px;
+        padding: 45px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    .aws-title {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .exam-title {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+
+    .exam-info {
+        text-align: left;
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 12px;
+        line-height: 1.8;
+        margin-bottom: 25px;
+    }
+
+    .start-btn {
+        background: #ff9900;
+        color: #111;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 9px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .start-btn:hover {
+        background: #ec8b00;
+    }
+
+    /* EXAM */
+    #examScreen {
+        display: none;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #172033;
+        color: white;
+        padding: 15px 25px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .header-title {
+        font-size: 21px;
+        font-weight: bold;
+    }
+
+    .timer {
+        font-size: 25px;
+        font-weight: bold;
+        background: white;
+        color: #172033;
+        padding: 9px 18px;
+        border-radius: 9px;
+        min-width: 110px;
+        text-align: center;
+    }
+
+    .timer.warning {
+        color: #b42318;
+    }
+
+    main {
+        max-width: 1000px;
+        margin: 25px auto;
+        padding: 0 18px 50px;
+    }
+
+    .progress-card {
+        background: white;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: #1769aa;
+        width: 0%;
+        transition: width 0.2s;
+    }
+
+    .question-card {
+        background: white;
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+    }
+
+    .question-number {
+        font-size: 15px;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .question-text {
+        font-size: 21px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .choose-two {
+        display: inline-block;
+        background: #fff3cd;
+        color: #664d03;
+        padding: 7px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .option {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px;
+        margin: 11px 0;
+        border: 2px solid #d9dee7;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.15s;
+    }
+
+    .option:hover {
+        background: #f4f8fc;
+        border-color: #8aa8c4;
+    }
+
+    .option.selected {
+        background: #eaf4ff;
+        border-color: #1769aa;
+    }
+
+    .option input {
+        margin-top: 4px;
+        transform: scale(1.2);
+        cursor: pointer;
+    }
+
+    .option-letter {
+        font-weight: bold;
+        min-width: 25px;
+    }
+
+    .bottom-controls {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    button {
+        border: none;
+        border-radius: 8px;
+        padding: 12px 18px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .prev-btn {
+        background: #64748b;
+        color: white;
+    }
+
+    .next-btn {
+        background: #1769aa;
+        color: white;
+    }
+
+    .submit-btn {
+        background: #b42318;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    .navigator-card {
+        background: white;
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .navigator {
+        display: grid;
+        grid-template-columns: repeat(13, 1fr);
+        gap: 6px;
+        margin-top: 12px;
+    }
+
+    .nav-btn {
+        padding: 8px 3px;
+        background: #94a3b8;
+        color: white;
+        font-size: 12px;
+    }
+
+    .nav-btn.answered {
+        background: #1769aa;
+    }
+
+    .nav-btn.current {
+        outline: 3px solid #ff9900;
+    }
+
+    /* RESULT */
+    #resultScreen {
+        display: none;
+        min-height: 100vh;
+        padding: 30px 15px;
+    }
+
+    .result-container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .score {
+        font-size: 42px;
+        font-weight: bold;
+        text-align: center;
+        margin: 15px 0;
+    }
+
+    .percentage {
+        font-size: 30px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .result-box {
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .result-box strong {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 5px;
+    }
+
+    .correct-color {
+        color: #087443;
+    }
+
+    .wrong-color {
+        color: #b42318;
+    }
+
+    .unanswered-color {
+        color: #64748b;
+    }
+
+    .readiness {
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 20px;
+        background: #f5f7fa;
+        margin-top: 20px;
+    }
+
+    .review-item {
+        border-top: 1px solid #e2e8f0;
+        padding: 18px 0;
+    }
+
+    .review-correct {
+        color: #087443;
+        font-weight: bold;
+    }
+
+    .review-wrong {
+        color: #b42318;
+        font-weight: bold;
+    }
+
+    .restart-btn {
+        display: block;
+        margin: 25px auto 0;
+        background: #1769aa;
+        color: white;
+        padding: 13px 25px;
+    }
+
+    @media(max-width:700px) {
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .timer {
+            width: 100%;
+        }
+
+        .navigator {
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .question-text {
+            font-size: 18px;
+        }
+
+        .start-card {
+            padding: 25px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- ================= START SCREEN ================= -->
+
+<div id="startScreen">
+
+    <div class="start-card">
+
+        <div class="aws-title">
+            AWS Certified Cloud Practitioner
+        </div>
+
+        <div class="exam-title">
+            CLF-C02 Full Mock Exam
+        </div>
+
+        <div class="exam-info">
+
+            <div>📋 <b>Questions:</b> 65</div>
+
+            <div>⏱️ <b>Time:</b> 90 Minutes</div>
+
+            <div>📝 <b>Format:</b> Multiple Choice + Multiple Response</div>
+
+            <div>🔒 <b>Answers:</b> Hidden until submission</div>
+
+            <div>🎯 <b>Practice Target:</b> 70%+</div>
+
+            <div>⚠️ <b>Timer:</b> Starts only after clicking Start Exam</div>
+
+        </div>
+
+        <button class="start-btn" onclick="startExam()">
+            ▶ Start Exam
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= EXAM SCREEN ================= -->
+
+<div id="examScreen">
+
+<header>
+
+    <div class="header-content">
+
+        <div>
+            <div class="header-title">
+                AWS CLF-C02 Full Mock Exam
+            </div>
+
+            <div id="questionCounter">
+                Question 1 of 65
+            </div>
+        </div>
+
+        <div id="timer" class="timer">
+            90:00
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <div class="progress-card">
+
+        <b id="progressText">
+            0 of 65 answered
+        </b>
+
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+    </div>
+
+
+    <div id="questionArea"></div>
+
+
+    <div class="navigator-card">
+
+        <b>Question Navigator</b>
+
+        <div id="navigator" class="navigator"></div>
+
+    </div>
+
+</main>
+
+</div>
+
+
+<!-- ================= RESULT SCREEN ================= -->
+
+<div id="resultScreen">
+
+    <div class="result-container">
+
+        <div class="result-card">
+
+            <h1 style="text-align:center;">
+                🏆 AWS CLF-C02 Mock Exam Result
+            </h1>
+
+            <div id="scoreDisplay" class="score"></div>
+
+            <div id="percentageDisplay" class="percentage"></div>
+
+            <div class="result-grid">
+
+                <div class="result-box">
+                    <strong id="correctCount" class="correct-color">0</strong>
+                    Correct
+                </div>
+
+                <div class="result-box">
+                    <strong id="wrongCount" class="wrong-color">0</strong>
+                    Wrong
+                </div>
+
+                <div class="result-box">
+                    <strong id="unansweredCount" class="unanswered-color">0</strong>
+                    Unanswered
+                </div>
+
+            </div>
+
+            <div id="summary"></div>
+
+            <div id="weakTopics"></div>
+
+            <div id="readiness" class="readiness"></div>
+
+        </div>
+
+
+        <div class="result-card">
+
+            <h2>
+                📝 Answer Review
+            </h2>
+
+            <div id="review"></div>
+
+            <button class="restart-btn" onclick="location.reload()">
+                🔄 Retake Exam
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   QUESTION DATA
+========================================================= */
+
+const questions = [
+
+{
+q:"Which benefit does AWS provide through economies of scale?",
+options:[
+"Customers receive unlimited free resources",
+"AWS can achieve lower costs by purchasing resources at large scale",
+"Customers must purchase hardware in advance",
+"AWS eliminates all operating expenses"
+],
+answer:["B"]
+},
+
+{
+q:"Which cloud characteristic allows resources to be automatically increased or decreased based on demand?",
+options:[
+"Elasticity",
+"Durability",
+"Availability",
+"Encryption"
+],
+answer:["A"]
+},
+
+{
+q:"A company wants to move its workloads from an on-premises data center to AWS without significant application changes. Which migration strategy is this?",
+options:[
+"Refactoring",
+"Replatforming",
+"Rehosting",
+"Repurchasing"
+],
+answer:["C"]
+},
+
+{
+q:"Which AWS concept allows customers to pay for resources based on actual usage?",
+options:[
+"Fixed pricing",
+"Pay-as-you-go pricing",
+"Hardware licensing",
+"Annual capacity pricing"
+],
+answer:["B"]
+},
+
+{
+q:"Which are advantages of cloud computing? Choose TWO.",
+options:[
+"Rapid provisioning",
+"Large upfront hardware purchases",
+"Global reach",
+"Manual hardware maintenance"
+],
+answer:["A","C"]
+},
+
+{
+q:"A company wants to deploy an application close to customers in Europe, Asia, and North America. Which AWS capability helps accomplish this?",
+options:[
+"Multiple AWS Regions",
+"IAM Groups",
+"Amazon EBS",
+"AWS CloudTrail"
+],
+answer:["A"]
+},
+
+{
+q:"What is an AWS Availability Zone?",
+options:[
+"A separate AWS account",
+"One or more discrete data centers with redundant power and networking",
+"A geographic continent",
+"An AWS billing account"
+],
+answer:["B"]
+},
+
+{
+q:"Which principle recommends distributing workloads across multiple Availability Zones to improve availability?",
+options:[
+"Fault tolerance",
+"Data compression",
+"Cost allocation",
+"Encryption"
+],
+answer:["A"]
+},
+
+{
+q:"A company wants to migrate an application to AWS and make some cloud optimizations without a complete redesign. Which strategy is most appropriate?",
+options:[
+"Rehosting",
+"Replatforming",
+"Retiring",
+"Retaining"
+],
+answer:["B"]
+},
+
+{
+q:"Which framework provides best-practice guidance for designing secure, reliable, efficient, and cost-effective workloads?",
+options:[
+"AWS Well-Architected Framework",
+"AWS Shared Responsibility Model",
+"AWS Pricing Calculator",
+"AWS Marketplace"
+],
+answer:["A"]
+},
+
+{
+q:"Which cloud deployment model combines on-premises infrastructure with cloud resources?",
+options:[
+"Public cloud",
+"Private cloud",
+"Hybrid cloud",
+"Edge cloud"
+],
+answer:["C"]
+},
+
+{
+q:"Which AWS concept describes the ability to recover from failures and continue operating?",
+options:[
+"Resilience",
+"Latency",
+"Compression",
+"Provisioning"
+],
+answer:["A"]
+},
+
+{
+q:"Which principle gives users only the permissions they need to perform their tasks?",
+options:[
+"Least privilege",
+"Unlimited privilege",
+"Shared privilege",
+"Root privilege"
+],
+answer:["A"]
+},
+
+{
+q:"Under the AWS Shared Responsibility Model, who is responsible for security OF the AWS Cloud?",
+options:[
+"Customer",
+"AWS",
+"Third-party auditors",
+"Internet service provider"
+],
+answer:["B"]
+},
+
+{
+q:"Who is responsible for configuring security groups for Amazon EC2 instances?",
+options:[
+"AWS",
+"Customer",
+"AWS Support",
+"Internet service provider"
+],
+answer:["B"]
+},
+
+{
+q:"Which AWS service manages users, groups, roles, and permissions?",
+options:[
+"AWS IAM",
+"Amazon Cognito",
+"AWS Shield",
+"AWS Artifact"
+],
+answer:["A"]
+},
+
+{
+q:"Which service records API activity and actions performed in an AWS account?",
+options:[
+"Amazon CloudWatch",
+"AWS CloudTrail",
+"Amazon Inspector",
+"AWS Config"
+],
+answer:["B"]
+},
+
+{
+q:"Which service continuously monitors AWS accounts for suspicious activity?",
+options:[
+"Amazon GuardDuty",
+"AWS Artifact",
+"Amazon S3",
+"AWS Budgets"
+],
+answer:["A"]
+},
+
+{
+q:"Which service helps identify software vulnerabilities in EC2 instances?",
+options:[
+"Amazon Inspector",
+"AWS Shield",
+"Amazon Route 53",
+"AWS Organizations"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service provides managed DDoS protection?",
+options:[
+"AWS Shield",
+"AWS WAF",
+"Amazon GuardDuty",
+"AWS KMS"
+],
+answer:["A"]
+},
+
+{
+q:"Which service helps protect web applications against common web exploits such as SQL injection?",
+options:[
+"AWS WAF",
+"AWS Shield",
+"Amazon Inspector",
+"Amazon Macie"
+],
+answer:["A"]
+},
+
+{
+q:"Which service is used to create and manage encryption keys?",
+options:[
+"AWS KMS",
+"AWS IAM",
+"Amazon Cognito",
+"AWS CloudTrail"
+],
+answer:["A"]
+},
+
+{
+q:"A company needs to securely store application passwords and database credentials. Which service should it use?",
+options:[
+"AWS Secrets Manager",
+"Amazon S3",
+"AWS Artifact",
+"Amazon CloudFront"
+],
+answer:["A"]
+},
+
+{
+q:"Which are security best practices? Choose TWO.",
+options:[
+"Enable MFA",
+"Use least privilege",
+"Share root account credentials",
+"Give every employee administrator access"
+],
+answer:["A","B"]
+},
+
+{
+q:"Which AWS service provides reports and compliance documents from AWS?",
+options:[
+"AWS Artifact",
+"AWS Config",
+"Amazon Inspector",
+"Amazon GuardDuty"
+],
+answer:["A"]
+},
+
+{
+q:"Which account should generally be protected with MFA and not used for everyday administrative tasks?",
+options:[
+"IAM user account",
+"AWS root user",
+"EC2 user",
+"S3 user"
+],
+answer:["B"]
+},
+
+{
+q:"Which AWS service helps discover and protect sensitive data stored in Amazon S3?",
+options:[
+"Amazon Macie",
+"Amazon Inspector",
+"AWS Shield",
+"Amazon GuardDuty"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides resizable virtual servers?",
+options:[
+"Amazon EC2",
+"Amazon S3",
+"Amazon RDS",
+"AWS Lambda"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides object storage?",
+options:[
+"Amazon EBS",
+"Amazon S3",
+"Amazon EFS",
+"Amazon EC2"
+],
+answer:["B"]
+},
+
+{
+q:"Which AWS service provides a managed relational database?",
+options:[
+"Amazon DynamoDB",
+"Amazon RDS",
+"Amazon S3",
+"Amazon Redshift"
+],
+answer:["B"]
+},
+
+{
+q:"Which database service is a managed NoSQL key-value database?",
+options:[
+"Amazon RDS",
+"Amazon Aurora",
+"Amazon DynamoDB",
+"Amazon Redshift"
+],
+answer:["C"]
+},
+
+{
+q:"Which service provides a managed in-memory cache?",
+options:[
+"Amazon ElastiCache",
+"Amazon S3",
+"Amazon EBS",
+"Amazon Route 53"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service provides scalable file storage that can be mounted by multiple EC2 instances?",
+options:[
+"Amazon EFS",
+"Amazon S3 Glacier",
+"Amazon EBS",
+"Amazon DynamoDB"
+],
+answer:["A"]
+},
+
+{
+q:"Which storage service provides block storage volumes primarily for EC2?",
+options:[
+"Amazon EBS",
+"Amazon S3",
+"Amazon EFS",
+"Amazon Glacier"
+],
+answer:["A"]
+},
+
+{
+q:"Which service is designed for long-term archival storage at very low cost?",
+options:[
+"S3 Glacier Deep Archive",
+"Amazon EFS",
+"Amazon EBS",
+"Amazon ElastiCache"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides DNS registration and routing?",
+options:[
+"Amazon Route 53",
+"Amazon CloudFront",
+"AWS Direct Connect",
+"Amazon VPC"
+],
+answer:["A"]
+},
+
+{
+q:"Which service distributes content globally using edge locations?",
+options:[
+"Amazon CloudFront",
+"Amazon RDS",
+"Amazon EBS",
+"AWS Lambda"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service runs code in response to events without requiring server management?",
+options:[
+"Amazon EC2",
+"AWS Lambda",
+"Amazon Lightsail",
+"AWS Outposts"
+],
+answer:["B"]
+},
+
+{
+q:"Which service provides a managed Kubernetes control plane?",
+options:[
+"Amazon ECS",
+"Amazon EKS",
+"AWS Lambda",
+"Amazon Lightsail"
+],
+answer:["B"]
+},
+
+{
+q:"Which AWS service provides managed container orchestration?",
+options:[
+"Amazon ECS",
+"Amazon EFS",
+"Amazon RDS",
+"AWS Artifact"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service allows containers to run without managing the underlying servers?",
+options:[
+"AWS Fargate",
+"Amazon EC2 Auto Scaling",
+"Amazon EBS",
+"AWS Outposts"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides a logically isolated virtual network?",
+options:[
+"Amazon VPC",
+"Amazon Route 53",
+"Amazon CloudFront",
+"AWS Organizations"
+],
+answer:["A"]
+},
+
+{
+q:"Which component controls inbound and outbound traffic at the instance level for EC2?",
+options:[
+"Security group",
+"IAM policy",
+"AWS Shield",
+"Route 53"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service provides a dedicated private connection from an on-premises network to AWS?",
+options:[
+"AWS Direct Connect",
+"Amazon CloudFront",
+"Amazon Route 53",
+"AWS WAF"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides centralized monitoring of AWS resources and applications?",
+options:[
+"Amazon CloudWatch",
+"AWS CloudTrail",
+"AWS Artifact",
+"Amazon Macie"
+],
+answer:["A"]
+},
+
+{
+q:"Which service can automatically scale EC2 capacity based on demand?",
+options:[
+"EC2 Auto Scaling",
+"AWS Artifact",
+"Amazon Inspector",
+"AWS IAM"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS services are commonly associated with analytics? Choose TWO.",
+options:[
+"Amazon Redshift",
+"Amazon Athena",
+"AWS IAM",
+"AWS Shield"
+],
+answer:["A","B"]
+},
+
+{
+q:"Which AWS tool estimates the cost of AWS services before deployment?",
+options:[
+"AWS Pricing Calculator",
+"AWS Cost Explorer",
+"AWS Budgets",
+"AWS Trusted Advisor"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides visualization and analysis of historical AWS costs and usage?",
+options:[
+"AWS Cost Explorer",
+"AWS Pricing Calculator",
+"AWS Artifact",
+"AWS CloudTrail"
+],
+answer:["A"]
+},
+
+{
+q:"Which service allows customers to create custom spending thresholds and alerts?",
+options:[
+"AWS Budgets",
+"Amazon CloudWatch",
+"AWS Organizations",
+"AWS Config"
+],
+answer:["A"]
+},
+
+{
+q:"Which pricing model is best suited for unpredictable workloads that cannot be interrupted?",
+options:[
+"On-Demand",
+"Spot Instances",
+"Reserved Instances only",
+"Dedicated Hosts only"
+],
+answer:["A"]
+},
+
+{
+q:"Which EC2 pricing option can provide large discounts but may be interrupted by AWS?",
+options:[
+"Spot Instances",
+"On-Demand Instances",
+"Dedicated Hosts",
+"Reserved Instances"
+],
+answer:["A"]
+},
+
+{
+q:"Which pricing option can reduce costs for workloads with predictable long-term usage?",
+options:[
+"Reserved Instances",
+"Spot Instances",
+"On-Demand only",
+"Free Tier only"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service provides recommendations for cost optimization, performance, security, and fault tolerance?",
+options:[
+"AWS Trusted Advisor",
+"AWS Artifact",
+"AWS CloudTrail",
+"Amazon Inspector"
+],
+answer:["A"]
+},
+
+{
+q:"A company wants to consolidate billing for multiple AWS accounts. Which service should it use?",
+options:[
+"AWS Organizations",
+"AWS IAM",
+"Amazon VPC",
+"AWS WAF"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS Support plan provides 24/7 access to technical support through phone, chat, and web?",
+options:[
+"Basic",
+"Developer",
+"Business",
+"Free Tier"
+],
+answer:["C"]
+},
+
+{
+q:"Which AWS Support plan is designed for organizations requiring the highest level of support and a designated Technical Account Manager?",
+options:[
+"Basic",
+"Developer",
+"Business",
+"Enterprise Support"
+],
+answer:["D"]
+},
+
+{
+q:"Which factors can affect AWS costs? Choose TWO.",
+options:[
+"Data transfer",
+"Amount of resources consumed",
+"Employee job titles",
+"Office building size"
+],
+answer:["A","B"]
+},
+
+{
+q:"Which AWS service helps manage multiple accounts and apply policies centrally?",
+options:[
+"AWS Organizations",
+"Amazon CloudWatch",
+"AWS KMS",
+"Amazon Inspector"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS purchasing option allows customers to commit to consistent usage in exchange for discounted pricing?",
+options:[
+"Savings Plans",
+"Spot Instances only",
+"Free Tier",
+"On-Demand Instances"
+],
+answer:["A"]
+},
+
+{
+q:"A company wants to identify unused EC2 resources and opportunities to reduce costs. Which service can provide recommendations?",
+options:[
+"AWS Trusted Advisor",
+"Amazon Macie",
+"AWS Shield",
+"Amazon Cognito"
+],
+answer:["A"]
+},
+
+{
+q:"Which statements about AWS Free Tier are correct? Choose TWO.",
+options:[
+"It allows certain AWS services within specified limits at no charge",
+"Every AWS service is completely free",
+"Usage beyond applicable limits can result in charges",
+"AWS Free Tier guarantees unlimited resources"
+],
+answer:["A","C"]
+},
+
+{
+q:"Which service provides a managed message queue that helps decouple application components?",
+options:[
+"Amazon SQS",
+"Amazon SNS",
+"Amazon SES",
+"Amazon Connect"
+],
+answer:["A"]
+},
+
+{
+q:"Which service is designed for pub/sub messaging and fan-out notifications?",
+options:[
+"Amazon SNS",
+"Amazon SQS",
+"Amazon EBS",
+"Amazon EFS"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides a managed email sending platform?",
+options:[
+"Amazon SES",
+"Amazon SQS",
+"Amazon SNS",
+"Amazon RDS"
+],
+answer:["A"]
+},
+
+{
+q:"Which service provides centralized identity for workforce access to multiple AWS accounts and applications?",
+options:[
+"AWS IAM Identity Center",
+"Amazon Macie",
+"AWS Shield",
+"Amazon EBS"
+],
+answer:["A"]
+},
+
+{
+q:"Which service helps create and manage infrastructure using templates?",
+options:[
+"AWS CloudFormation",
+"Amazon CloudWatch",
+"AWS Budgets",
+"Amazon Inspector"
+],
+answer:["A"]
+},
+
+{
+q:"Which AWS service provides a managed data warehouse designed for analytics?",
+options:[
+"Amazon Redshift",
+"Amazon DynamoDB",
+"Amazon EFS",
+"Amazon Route 53"
+],
+answer:["A"]
+}
+
+];
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let currentQuestion = 0;
+
+let userAnswers = {};
+
+let timeRemaining = 90 * 60;
+
+let timerInterval = null;
+
+let examStarted = false;
+
+
+/* =========================================================
+   START EXAM
+========================================================= */
+
+function startExam() {
+
+    document.getElementById("startScreen").style.display = "none";
+
+    document.getElementById("examScreen").style.display = "block";
+
+    examStarted = true;
+
+    renderQuestion();
+
+    renderNavigator();
+
+    updateProgress();
+
+    startTimer();
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function startTimer() {
+
+    timerInterval = setInterval(function() {
+
+        timeRemaining--;
+
+        updateTimer();
+
+        if (timeRemaining <= 0) {
+
+            clearInterval(timerInterval);
+
+            alert("⏰ Time is over. Your exam will be submitted automatically.");
+
+            submitExam(true);
+
+        }
+
+    }, 1000);
+
+}
+
+
+function updateTimer() {
+
+    let minutes = Math.floor(timeRemaining / 60);
+
+    let seconds = timeRemaining % 60;
+
+    let timer = document.getElementById("timer");
+
+    timer.textContent =
+        String(minutes).padStart(2,"0") +
+        ":" +
+        String(seconds).padStart(2,"0");
+
+    if (timeRemaining <= 10 * 60) {
+
+        timer.classList.add("warning");
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER QUESTION
+========================================================= */
+
+function renderQuestion() {
+
+    let question = questions[currentQuestion];
+
+    let multi = question.answer.length > 1;
+
+    let selected = userAnswers[currentQuestion] || [];
+
+    let html = `
+
+        <div class="question-card">
+
+            <div class="question-number">
+                Question ${currentQuestion + 1} of ${questions.length}
+            </div>
+
+            ${multi ? `<div class="choose-two">SELECT TWO ANSWERS</div>` : ""}
+
+            <div class="question-text">
+                ${question.q}
+            </div>
+    `;
+
+
+    question.options.forEach(function(option, index) {
+
+        let letter = String.fromCharCode(65 + index);
+
+        let checked = selected.includes(letter);
+
+        html += `
+
+            <label class="option ${checked ? "selected" : ""}">
+
+                <input
+                    type="${multi ? "checkbox" : "radio"}"
+                    name="answer"
+                    value="${letter}"
+                    ${checked ? "checked" : ""}
+                    onchange="selectAnswer('${letter}')"
+                >
+
+                <span class="option-letter">
+                    ${letter}.
+                </span>
+
+                <span>
+                    ${option}
+                </span>
+
+            </label>
+
+        `;
+
+    });
+
+
+    html += `
+
+            <div class="bottom-controls">
+
+                <button
+                    class="prev-btn"
+                    onclick="previousQuestion()"
+                    ${currentQuestion === 0 ? "disabled" : ""}
+                >
+                    ← Previous
+                </button>
+
+                ${
+                    currentQuestion < questions.length - 1
+
+                    ?
+
+                    `<button
+                        class="next-btn"
+                        onclick="nextQuestion()">
+                        Next →
+                    </button>`
+
+                    :
+
+                    `<button
+                        class="submit-btn"
+                        onclick="submitExam(false)">
+                        Submit Exam
+                    </button>`
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.getElementById("questionArea").innerHTML = html;
+
+    document.getElementById("questionCounter").textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+}
+
+
+/* =========================================================
+   SELECT ANSWER
+========================================================= */
+
+function selectAnswer(letter) {
+
+    let question = questions[currentQuestion];
+
+    let multi = question.answer.length > 1;
+
+    if (!userAnswers[currentQuestion]) {
+
+        userAnswers[currentQuestion] = [];
+
+    }
+
+
+    if (!multi) {
+
+        userAnswers[currentQuestion] = [letter];
+
+    }
+
+    else {
+
+        let index =
+            userAnswers[currentQuestion].indexOf(letter);
+
+        if (index >= 0) {
+
+            userAnswers[currentQuestion].splice(index, 1);
+
+        }
+
+        else {
+
+            if (userAnswers[currentQuestion].length < 2) {
+
+                userAnswers[currentQuestion].push(letter);
+
+            }
+
+            else {
+
+                alert("Please select exactly TWO answers.");
+
+            }
+
+        }
+
+    }
+
+
+    renderQuestion();
+
+    renderNavigator();
+
+    updateProgress();
+
+}
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+function nextQuestion() {
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        renderQuestion();
+
+        renderNavigator();
+
+    }
+
+}
+
+
+/* =========================================================
+   PREVIOUS
+========================================================= */
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        renderQuestion();
+
+        renderNavigator();
+
+    }
+
+}
+
+
+/* =========================================================
+   NAVIGATOR
+========================================================= */
+
+function renderNavigator() {
+
+    let html = "";
+
+    questions.forEach(function(question, index) {
+
+        let answered =
+            userAnswers[index] &&
+            userAnswers[index].length > 0;
+
+        html += `
+
+            <button
+                class="nav-btn
+                ${answered ? "answered" : ""}
+                ${index === currentQuestion ? "current" : ""}"
+                onclick="goToQuestion(${index})">
+
+                ${index + 1}
+
+            </button>
+
+        `;
+
+    });
+
+    document.getElementById("navigator").innerHTML = html;
+
+}
+
+
+/* =========================================================
+   GO TO QUESTION
+========================================================= */
+
+function goToQuestion(index) {
+
+    currentQuestion = index;
+
+    renderQuestion();
+
+    renderNavigator();
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateProgress() {
+
+    let answered = Object.keys(userAnswers).filter(function(key) {
+
+        return userAnswers[key] &&
+               userAnswers[key].length > 0;
+
+    }).length;
+
+
+    let percentage =
+        (answered / questions.length) * 100;
+
+
+    document.getElementById("progressText").textContent =
+        `${answered} of ${questions.length} answered`;
+
+    document.getElementById("progressFill").style.width =
+        percentage + "%";
+
+}
+
+
+/* =========================================================
+   SUBMIT EXAM
+========================================================= */
+
+function submitExam(autoSubmit) {
+
+    if (!autoSubmit) {
+
+        let unanswered = questions.length -
+            Object.keys(userAnswers).filter(function(key) {
+
+                return userAnswers[key] &&
+                       userAnswers[key].length > 0;
+
+            }).length;
+
+
+        if (unanswered > 0) {
+
+            let confirmSubmit = confirm(
+                `You have ${unanswered} unanswered question(s).\n\nDo you want to submit the exam?`
+            );
+
+            if (!confirmSubmit) {
+
+                return;
+
+            }
+
+        }
+        else {
+
+            let confirmSubmit = confirm(
+                "Are you sure you want to submit your exam?"
+            );
+
+            if (!confirmSubmit) {
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+    clearInterval(timerInterval);
+
+    calculateResult();
+
+}
+
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+function calculateResult() {
+
+    let score = 0;
+
+    let wrong = 0;
+
+    let unanswered = 0;
+
+    let reviewHTML = "";
+
+
+    questions.forEach(function(question, index) {
+
+        let correct =
+            [...question.answer].sort().join(",");
+
+        let user =
+            userAnswers[index]
+            ? [...userAnswers[index]].sort().join(",")
+            : "";
+
+
+        let isCorrect =
+            user === correct;
+
+
+        if (isCorrect) {
+
+            score++;
+
+        }
+        else if (user === "") {
+
+            unanswered++;
+
+        }
+        else {
+
+            wrong++;
+
+        }
+
+
+        let correctText =
+            question.answer.join(", ");
+
+
+        let userText =
+            userAnswers[index]
+            ? userAnswers[index].join(", ")
+            : "Not Answered";
+
+
+        reviewHTML += `
+
+            <div class="review-item">
+
+                <div>
+                    <b>Q${index + 1}.</b>
+                    ${question.q}
+                </div>
+
+                <p class="${isCorrect ? "review-correct" : "review-wrong"}">
+
+                    ${isCorrect ? "✓ Correct" : "✗ Incorrect"}
+
+                </p>
+
+                <div>
+                    <b>Your Answer:</b>
+                    ${userText}
+                </div>
+
+                <div>
+                    <b>Correct Answer:</b>
+                    ${correctText}
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    let percentage =
+        Math.round((score / questions.length) * 100);
+
+
+    let readiness = "";
+
+    let summary = "";
+
+    if (percentage >= 80) {
+
+        readiness =
+            "🟢 EXAM READY — Strong performance";
+
+        summary =
+            "Excellent result. You have a strong understanding of core AWS concepts. Continue reviewing weak areas and keep practicing under timed conditions.";
+
+    }
+
+    else if (percentage >= 70) {
+
+        readiness =
+            "🟡 ALMOST READY — More revision recommended";
+
+        summary =
+            "Good foundation. You are near the target level, but should review incorrect answers and strengthen weaker AWS service, security, and pricing topics.";
+
+    }
+
+    else if (percentage >= 60) {
+
+        readiness =
+            "🟠 NEEDS MORE PRACTICE";
+
+        summary =
+            "You have a developing understanding of AWS. Focus on core services, security, pricing, and cloud concepts before attempting the real exam.";
+
+    }
+
+    else {
+
+        readiness =
+            "🔴 NOT READY YET";
+
+        summary =
+            "More preparation is recommended. Start with AWS core services, Shared Responsibility Model, IAM, storage, databases, networking, and billing.";
+
+    }
+
+
+    document.getElementById("examScreen").style.display = "none";
+
+    document.getElementById("resultScreen").style.display = "block";
+
+
+    document.getElementById("scoreDisplay").textContent =
+        `${score} / ${questions.length}`;
+
+
+    document.getElementById("percentageDisplay").textContent =
+        `${percentage}%`;
+
+
+    document.getElementById("correctCount").textContent =
+        score;
+
+
+    document.getElementById("wrongCount").textContent =
+        wrong;
+
+
+    document.getElementById("unansweredCount").textContent =
+        unanswered;
+
+
+    document.getElementById("summary").innerHTML = `
+
+        <h2>📊 Performance Summary</h2>
+
+        <p>${summary}</p>
+
+    `;
+
+
+    document.getElementById("weakTopics").innerHTML = `
+
+        <h2>📚 Recommended Review Areas</h2>
+
+        <ul>
+
+            <li>AWS Core Services</li>
+
+            <li>IAM & Security</li>
+
+            <li>Shared Responsibility Model</li>
+
+            <li>Storage & Databases</li>
+
+            <li>Networking</li>
+
+            <li>Pricing & Billing</li>
+
+            <li>Cloud Concepts</li>
+
+        </ul>
+
+    `;
+
+
+    document.getElementById("readiness").textContent =
+        readiness;
+
+
+    document.getElementById("review").innerHTML =
+        reviewHTML;
+
+}
+
+</script>
+
+</body>
+</html>
