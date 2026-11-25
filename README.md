@@ -10,6 +10,8 @@ A Python-based Employee Laptop Monitoring System.
 - Docker
 - GitHub Actions
 - Linux
+- test
+- update code
 
 ## Project Goals
 - Monitor employee laptop activities.
